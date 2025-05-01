@@ -25,7 +25,7 @@ int main() {
     std::cout << taylor::sin<fixedpoint<long long int>>(0.16f) << std::endl; //0.1593182066142460
     std::cout << taylor::sqrt<fixedpoint<long long int>>(2) << std::endl; //1.414213562373095
     std::cout << taylor::asin<fixedpoint<long long int>>(0.5) << std::endl; //0.5235987755982989
-    std::cout << taylor::asin<fixedpoint<long long int>>(0.95) << std::endl; //1.253235897503375
+    std::cout << taylor::asin<fixedpoint<long long int>>(0.99) << std::endl; //1.429256853470469
 
     std::cout << taylor::ln<fixedpoint<long long int>>(0.5) << std::endl; //-0,6931471805599453
     std::cout << taylor::ln<fixedpoint<long long int>>(2) << std::endl; //0,6931471805599453
