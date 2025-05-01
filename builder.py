@@ -219,6 +219,7 @@ except:
 
 execs = [getExecutableFileName(fileName) for fileName in executables]
 testExecs = [fn for fn in execs if re.search(TEST_FILE_FILTER, fn) is not None]
+testExecs.sort()
 
 if not errors:
     if COMMAND_TEST in argv:
