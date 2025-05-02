@@ -101,11 +101,15 @@ class fixedpoint {
          : buf(another.buf) {}
 
         template<typename T2, typename TC2, unsigned frac_bits2>
-        constexpr fixedpoint(const fixedpoint<T2, TC2, frac_bits2>& another) noexcept
-         : buf((frac_bits > frac_bits2) ? another.buf << (frac_bits - frac_bits2) : another.buf >> (frac_bits2 - frac_bits)) {}
+         fixedpoint(const fixedpoint<T2, TC2, frac_bits2>& another) noexcept
+         : buf((frac_bits > frac_bits2) ? ((T)another.buf << (frac_bits - frac_bits2)) : (another.buf >> (frac_bits2 - frac_bits))) {}
 
         constexpr static fixedpoint buf_cast(const T buf) noexcept {
             return fixedpoint(buf, true);
+        }
+
+        constexpr static fixedpoint fraction(const T& counter, const T& denimonator) noexcept {
+            return  fixedpoint((counter << frac_bits) / denimonator, true);
         }
 
         constexpr friend fixedpoint operator+(const fixedpoint first, const fixedpoint second) noexcept {
@@ -204,6 +208,20 @@ class fixedpoint {
             return fixedpoint((TC)(first * ((TC)1 << (bits_shift_large_num + frac_bits))) / (TC)second.buf, true);
         }
 
+        constexpr friend fixedpoint operator%(const fixedpoint first, const fixedpoint second) noexcept {
+            return fixedpoint(first.buf % second.buf, true);
+        }
+
+        FIXED_POINT_INTEGER_TEMPLATE
+        friend fixedpoint operator%(const fixedpoint first, const I second) noexcept {
+            return fixedpoint(first.buf % (T)second, true);
+        }
+
+        FIXED_POINT_FLOAT_TEMPLATE
+        constexpr friend fixedpoint operator%(const fixedpoint first, const FP second) noexcept {
+            return fixedpoint(first.buf % (second * ((T)1 << frac_bits)), true);
+        }
+
         FIXED_POINT_INTEGER_TEMPLATE
         constexpr friend fixedpoint operator<<(const fixedpoint first, const I second) noexcept {
             return fixedpoint(first.buf << second, true);
@@ -271,6 +289,11 @@ class fixedpoint {
 
         FIXED_POINT_INTEGER_TEMPLATE
         void operator*=(const I another) {
+            buf *= (T)another;
+        }
+
+        FIXED_POINT_FLOAT_TEMPLATE
+        void operator*=(const FP another) {
             buf *= another;
         }
 
@@ -280,7 +303,26 @@ class fixedpoint {
 
         FIXED_POINT_INTEGER_TEMPLATE
         void operator/=(const I another) noexcept {
+            buf /= (T)another;
+        }
+
+        FIXED_POINT_FLOAT_TEMPLATE
+        void operator/=(const FP another) noexcept {
             buf /= another;
+        }
+
+        void operator%=(const fixedpoint another) noexcept {
+            buf %= another.buf;
+        }
+
+        FIXED_POINT_INTEGER_TEMPLATE
+        void operator%=(const I another) noexcept {
+            buf %= (T)another;
+        }
+
+        FIXED_POINT_FLOAT_TEMPLATE
+        void operator%=(const FP another) noexcept {
+            buf %= another;
         }
 
         FIXED_POINT_INTEGER_TEMPLATE
