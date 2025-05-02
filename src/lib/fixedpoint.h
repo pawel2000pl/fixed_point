@@ -47,15 +47,15 @@ struct make_least_int {
     static_assert(std::numeric_limits<T>::is_integer, "T must be an integer type.");
 };
 
-#define __MAKE_INT_MAPPING(N, PREFIX)                              \
-template<>                                                       \
-struct make_##PREFIX##_int<std::int##N##_t> {                    \
-    using type = std::int_##PREFIX##N##_t;                       \
-};                                                               \
-template<>                                                       \
-struct make_##PREFIX##_int<std::uint##N##_t> {                   \
-    using type = std::uint_##PREFIX##N##_t;                      \
-};
+#define __MAKE_INT_MAPPING(N, PREFIX)                                \
+    template<>                                                       \
+    struct make_##PREFIX##_int<std::int##N##_t> {                    \
+        using type = std::int_##PREFIX##N##_t;                       \
+    };                                                               \
+    template<>                                                       \
+    struct make_##PREFIX##_int<std::uint##N##_t> {                   \
+        using type = std::uint_##PREFIX##N##_t;                      \
+    };
 
 #define __MAKE_INT_TRAITS(PREFIX) \
     __MAKE_INT_MAPPING(8, PREFIX) \
