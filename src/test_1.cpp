@@ -10,8 +10,6 @@
 int status_code = 0;
 unsigned long long test_no = 0;
 
-using fixed64 = fixedpoint<long long int>;
-
 int main() {
 
 
