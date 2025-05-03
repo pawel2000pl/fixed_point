@@ -33,7 +33,17 @@ void test() {
         }
     }
 
-    for (float x=-1;x<1;x+=1e-2) {
+    for (float x=0;x<10;x+=2.5e-2) {
+        test_no++;
+        float a = (float)taylor::sqrt<FP>(FP(x));
+        float b = std::sqrt(x);
+        if (std::abs(a - b) > 2e-2) {
+            std::cout << "Error at test " << test_no << " (sqrt) at x = " << x << " : " << " expected: " << b << " got: " << a << std::endl;
+            status_code = 1;
+        }
+    }
+
+    for (float x=-0.999;x<0.999;x+=1e-2) {
         test_no++;
         float a = (float)taylor::asin<FP>(FP(x));
         float b = std::asin(x);
@@ -45,7 +55,7 @@ void test() {
 
     for (float x=1e-3;x<10;x*=1+1e-2) {
         test_no++;
-        float a = (float)taylor::ln<FP>(FP(x));
+        float a = (float)taylor::log<FP>(FP(x));
         float b = std::log(x);
         if (std::abs(a - b) > 0.01*std::abs(b)) {
             std::cout << "Error at test " << test_no << " (ln) at x = " << x << " : " << " expected: " << b << " got: " << a << std::endl;
@@ -68,7 +78,7 @@ void test() {
 int main() {
 
     test<fixed32>();
-    // test<fixed64>();
+    test<fixed64>();
 
     return status_code;
 }
