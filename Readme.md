@@ -18,6 +18,7 @@ Template dedicated for RISC-V IM.
 <tr><td>
 </tbody>
 </table>
+Functions were computed using taylormath for fixed-point types and cmath for floating-point types
 
 ## Taylormath accuracy 
 
