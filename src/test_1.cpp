@@ -33,7 +33,7 @@ void test() {
         }
     }
 
-    for (float x=0;x<10;x+=2.5e-2) {
+    for (float x=0;x<20;x+=1e-2) {
         test_no++;
         float a = (float)taylor::sqrt<FP>(FP(x));
         float b = std::sqrt(x);
