@@ -46,12 +46,12 @@ T prod_test(unsigned n) {
 
 template<typename T> 
 T quot_test(unsigned n) {
-  T result = 1;
+  T result = 1000;
   T div1 = 1.01f;
   T div2 = 0.9901f;
   for (unsigned i=0;i<n;i++) {
-    result /= div2;
     result /= div1;
+    result /= div2;
   }
   result_dump = result;
   return result;

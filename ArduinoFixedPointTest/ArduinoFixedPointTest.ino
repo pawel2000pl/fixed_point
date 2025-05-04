@@ -11,16 +11,19 @@ void setup() {
 void loop() {
   Serial.println("\nSTARTING TESTS\n\n");
 
-  Serial.print("fixed32\t");
+  Serial.print("fixed32  \t");
   all_tests_taylor<fixed32>(100000);
 
-  Serial.print("fixed64\t");
+  Serial.print("fixed32_a\t");
+  all_tests_taylor<fixed32_a>(100000);
+
+  Serial.print("fixed64  \t");
   all_tests_taylor<fixed64>(100000);
 
-  Serial.print("float\t");
+  Serial.print("float   \t");
   all_tests_std<float>(100000);
 
-  Serial.print("double\t");
+  Serial.print("double  \t");
   all_tests_std<double>(100000);
 
   Serial.println("\nDONE\n\n");
