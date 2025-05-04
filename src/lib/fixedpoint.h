@@ -664,16 +664,39 @@ namespace std {
 
 }
 
-
+// standard types
 using fixed8 = fixedpoint<std::int8_t>;
 using fixed16 = fixedpoint<std::int16_t>;
 using fixed32 = fixedpoint<std::int32_t>;
 using fixed64 = fixedpoint<std::int64_t>;
 
+using ufixed8 = fixedpoint<std::uint8_t>;
+using ufixed16 = fixedpoint<std::uint16_t>;
+using ufixed32 = fixedpoint<std::uint32_t>;
+using ufixed64 = fixedpoint<std::uint64_t>;
+
+// accuracy types - multiplication with larger int - if it is possible
 using fixed8_a = fixedpoint<std::int8_t, make_fast_int<std::int16_t>::type>;
 using fixed16_a = fixedpoint<std::int16_t, make_fast_int<std::int32_t>::type>;
 using fixed32_a = fixedpoint<std::int32_t, make_fast_int<std::int64_t>::type>;
 using fixed64_a = fixed64;
+
+using ufixed8_a = fixedpoint<std::uint8_t, make_fast_int<std::uint16_t>::type>;
+using ufixed16_a = fixedpoint<std::uint16_t, make_fast_int<std::uint32_t>::type>;
+using ufixed32_a = fixedpoint<std::uint32_t, make_fast_int<std::uint64_t>::type>;
+using ufixed64_a = ufixed64;
+
+// simple types - multiplication with the same size of int
+using fixed8_s = fixedpoint<std::int8_t, std::int8_t>;
+using fixed16_s = fixedpoint<std::int16_t, std::int16_t>;
+using fixed32_s = fixedpoint<std::int32_t, std::int32_t>;
+using fixed64_s = fixedpoint<std::int64_t, std::int64_t>;
+
+using ufixed8_s = fixedpoint<std::uint8_t, std::uint8_t>;
+using ufixed16_s = fixedpoint<std::uint16_t, std::uint16_t>;
+using ufixed32_s = fixedpoint<std::uint32_t, std::uint32_t>;
+using ufixed64_s = fixedpoint<std::uint64_t, std::uint64_t>;
+
 
 
 #endif

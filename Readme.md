@@ -1,10 +1,15 @@
+# Library for fixed point operations with math module based on (mostly) taylor series.
+
+Template dedicated for RISC-V IM.
+
 ## Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
+
 <table>
 <thead>
 <th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr>
 </thead>
 <tbody>
-<tr><th>fixed32</th><td>6919</td><td>6922</td><td>5034</td><td>38996</td><td>205598</td><td>70137</td><td>144180</td><td>697098</td><td>289895</td></tr>
+<tr><th>fixed32_s</th><td>6919</td><td>6922</td><td>5034</td><td>38996</td><td>205598</td><td>70137</td><td>144180</td><td>697098</td><td>289895</td></tr>
 <tr><th>fixed32_a</th><td>6940</td><td>6920</td><td>15723</td><td>201881</td><td>317254</td><td>258456</td><td>211013</td><td>1277095</td><td>379804</td></tr>
 <tr><th>fixed64</th><td>11346</td><td>12579</td><td>15097</td><td>204423</td><td>879286</td><td>369514</td><td>566683</td><td>5165186</td><td>1405123</td></tr>
 <tr><th>float</th><td>102087</td><td>106467</td><td>163522</td><td>255331</td><td>2047577</td><td>347389</td><td>537886</td><td>1543864</td><td>2036302</td></tr>
@@ -13,3 +18,14 @@
 <tr><td>
 </tbody>
 </table>
+
+## Taylormath accuracy 
+
+Differences with double and cmath as reference.<br>
+
+![asin plot](plots/plot_asin.png)
+![cos plot](plots/plot_cos.png)
+![sin plot](plots/plot_sin.png)
+![log plot](plots/plot_log.png)
+![exp plot](plots/plot_exp.png)
+![sqrt plot](plots/plot_sqrt.png)
