@@ -28,7 +28,7 @@ def draw_plots(function):
     plt.plot(*load_data(f'fixed64_taylor_{function}.txt', ref_y), label='fixed64', linestyle=(0, (5, 2)), alpha=0.7, marker='x', markersize=4)
     plt.title(function)
     plt.yscale('log')
-    plt.ylim(1e-10, 1)
+    # plt.ylim(1e-10, 1)
     plt.legend()
     plt.grid(True)
     plt.savefig(f'plot_{function}.png')
