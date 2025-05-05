@@ -89,19 +89,19 @@ std::cout << (fixed64)x + y << std::endl;
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
 
 <table><thead><th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><td>6981</td><td>6914</td><td>6298</td><td>38997</td><td>210320</td><td>21003</td><td>120320</td><td>64945</td><td>303384</td>
+<tr><th>fixed32_s</th><td>6968</td><td>6915</td><td>6298</td><td>38997</td><td>210320</td><td>21003</td><td>106477</td><td>64946</td><td>303379</td>
 
 </tr>
-<tr><th>fixed32_a</th><td>6948</td><td>6922</td><td>15728</td><td>201885</td><td>317344</td><td>21247</td><td>126838</td><td>65423</td><td>391425</td>
+<tr><th>fixed32_a</th><td>6964</td><td>6922</td><td>15727</td><td>201890</td><td>317346</td><td>21247</td><td>113273</td><td>65423</td><td>391420</td>
 
 </tr>
-<tr><th>fixed64</th><td>13238</td><td>12586</td><td>21383</td><td>206312</td><td>874292</td><td>25047</td><td>434619</td><td>311185</td><td>1438529</td>
+<tr><th>fixed64</th><td>13238</td><td>12586</td><td>21383</td><td>206306</td><td>874299</td><td>25047</td><td>300869</td><td>311184</td><td>1438529</td>
 
 </tr>
-<tr><th>float</th><td>101469</td><td>105844</td><td>163523</td><td>255333</td><td>2047598</td><td>347396</td><td>537888</td><td>1543883</td><td>2036340</td>
+<tr><th>float</th><td>101469</td><td>105844</td><td>163517</td><td>255333</td><td>2047593</td><td>347401</td><td>537889</td><td>1543884</td><td>2036340</td>
 
 </tr>
-<tr><th>double</th><td>118823</td><td>121312</td><td>288669</td><td>494616</td><td>3052356</td><td>627819</td><td>846884</td><td>2358329</td><td>3022996</td>
+<tr><th>double</th><td>118846</td><td>121312</td><td>288670</td><td>494615</td><td>3052356</td><td>627820</td><td>846884</td><td>2358328</td><td>3022996</td>
 
 </tr>
 </tbody></table>

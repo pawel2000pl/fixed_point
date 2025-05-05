@@ -200,7 +200,7 @@ namespace taylor {
 
     template<typename T>
     T calculate_asin_half() {
-        T test = div_by_pow2<T>(1, 2);
+        T test = div_by_pow2<T>(1, 1);
         T half = test;
         while (test > 0) {
             test = div_by_pow2<T>(test, 1);
