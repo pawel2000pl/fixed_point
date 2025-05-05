@@ -43,8 +43,14 @@
 
 namespace taylor {
 
+    extern std::size_t gamma_tab_size;
     extern std::uint64_t gamma_tab[];
+    extern std::size_t asin_divisors_tab_size;
+    extern std::uint64_t asin_divisors_tab[];
+    extern std::size_t pochhammer_counters_size;
     extern std::uint64_t pochhammer_counters[];
+
+    extern bool constants_initilized;
 
     template<typename T>
     struct has_shift_left {
@@ -100,8 +106,10 @@ namespace taylor {
         T x2 = x*x;
         unsigned add_gamma = sine ? 1 : 0;
         unsigned i = 0;
-        while (i < 10) {
-            T part = poly / gamma_tab[(i<<1)|add_gamma];
+        while (1) {
+            unsigned j = (i<<1)|add_gamma;
+            if (j >= gamma_tab_size) break;
+            T part = poly / gamma_tab[j];
             if (__glibc_unlikely(part <= 0)) return result;
             T new_result = (++i & 1) ? (result + part) : (result - part);
             if (__glibc_unlikely(result == new_result)) return result;
@@ -161,10 +169,9 @@ namespace taylor {
         T result = 0;
         T poly = x;
         T x2 = x*x;
-        for (unsigned i=0;i<18;i++) {
-            T part = div_by_pow2<T>(pochhammer_counters[i], i) * poly / (gamma_tab[i] + gamma_tab[i] * (i << 1));
-            if (__glibc_unlikely(part <= 0)) break;
-            T new_result = (result + part);
+        for (unsigned i=0;i<asin_divisors_tab_size;i++) {
+            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);            
+            T new_result = result + part;
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x2;
@@ -180,11 +187,9 @@ namespace taylor {
         T result = 0;
         T coeff = sqrt<T>(mul_by_pow2<T>(x, 1));
         T poly = 1;
-        for (unsigned i=0;i<18;i++) {
-            unsigned di = i << 1;
-            T part = div_by_pow2<T>(pochhammer_counters[i], di) * poly / (gamma_tab[i] + gamma_tab[i] * di);
-            if (__glibc_unlikely(part <= 0)) break;
-            T new_result = (result + part);
+        for (unsigned i=0;i<asin_divisors_tab_size;i++) {
+            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i << 1);
+            T new_result = result + part;
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x;
@@ -273,7 +278,7 @@ namespace taylor {
     T exp_small_pos(T x) {
         T poly = 1;
         T result = 0;
-        for (unsigned i=0;i<21;i++) {
+        for (unsigned i=0;i<gamma_tab_size;i++) {
             T part = poly / gamma_tab[i];
             if (__glibc_unlikely(part <= 0)) return result;
             T new_result = result + part;

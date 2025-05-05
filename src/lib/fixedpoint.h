@@ -186,7 +186,7 @@ class fixedpoint {
         constexpr friend fixedpoint operator/(const fixedpoint first, const fixedpoint second) noexcept {
             TC divisor = second.buf >> bits_shift_norm_element;
             if (bits_shift_norm_element) {
-                if (second.buf < 0 && divisor == -1)
+                if (!~divisor)
                     return (first.buf < 0) ? std::numeric_limits<fixedpoint>::max() : std::numeric_limits<fixedpoint>::lowest();
                 if (!divisor)
                     return (first.buf < 0) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max();
@@ -203,7 +203,7 @@ class fixedpoint {
         constexpr friend fixedpoint operator/(const I first, const fixedpoint second) noexcept {            
             TC divisor = second.buf >> bits_shift_norm_element;
             if (bits_shift_norm_element) {
-                if (second.buf < 0 && divisor == -1)
+                if (!~divisor)
                     return (first < 0) ? std::numeric_limits<fixedpoint>::max() : std::numeric_limits<fixedpoint>::lowest();
                 if (!divisor)
                     return (first < 0) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max();
@@ -313,7 +313,7 @@ class fixedpoint {
         void operator/=(const fixedpoint another) noexcept {            
             TC divisor = another.buf >> bits_shift_norm_element;            
             if (bits_shift_norm_element) {
-                if (buf < 0 && divisor == -1) {
+                if (!~divisor) {
                     buf = (buf < 0) ? std::numeric_limits<fixedpoint>::max() : std::numeric_limits<fixedpoint>::lowest();
                     return;
                 }
