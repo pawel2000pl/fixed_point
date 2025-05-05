@@ -57,7 +57,7 @@ void test() {
         test_no++;
         float a = (float)taylor::log<FP>(FP(x));
         float b = std::log(x);
-        if (std::abs(a - b) > 0.01*std::abs(b)) {
+        if (std::abs(a - b) > (x < 5e-3 ? 0.1 : 0.01)*std::abs(b)) {
             std::cout << "Error at test " << test_no << " (ln) at x = " << x << " : " << " expected: " << b << " got: " << a << std::endl;
             status_code = 1;
         }

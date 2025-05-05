@@ -30,8 +30,9 @@
 
 #include <cmath>
 #include <limits>
+#include <utility>
 #include <cstdint>
-#include <functional>
+#include <type_traits>
 
 #ifndef __glibc_unlikely
 #define __glibc_unlikely
@@ -44,6 +45,53 @@ namespace taylor {
 
     extern std::uint64_t gamma_tab[];
     extern std::uint64_t pochhammer_counters[];
+
+    template<typename T>
+    struct has_shift_left {
+    private:
+        template<typename U>
+        static auto test(int) -> decltype(std::declval<U>() << std::declval<int>(), std::true_type());
+    
+        template<typename>
+        static std::false_type test(...);
+    
+    public:
+        static constexpr bool value = decltype(test<T>(0))::value;
+    };
+
+    template<typename T>
+    struct has_shift_right {
+    private:
+        template<typename U>
+        static auto test(int) -> decltype(std::declval<U>() >> std::declval<int>(), std::true_type());
+    
+        template<typename>
+        static std::false_type test(...);
+    
+    public:
+        static constexpr bool value = decltype(test<T>(0))::value;
+    };
+
+    template<typename T>
+    typename std::enable_if<has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
+        return x << n;
+    }
+
+    template<typename T>
+    typename std::enable_if<!has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
+        return x * ((std::size_t)1 << n);
+    }
+
+    template<typename T>
+    typename std::enable_if<has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
+        return x >> n;
+    }
+
+    template<typename T>
+    typename std::enable_if<!has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
+        return x / ((std::size_t)1 << n);
+    }
+
 
     template<typename T>
     T base_trig_pos(T x, bool sine) {
@@ -95,12 +143,14 @@ namespace taylor {
     T sqrt(T s) {
         if (s == 0) return T(0);
         static const unsigned max_iter = std::round(std::sqrt(
-            (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min()))/2
-        ));
-        constexpr static const T half = 0.5;        
-        T x = (s < 1) ? 2*s : (((s-1) * half)+1);
+            (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min())) / 2
+        ));   
+        constexpr static const T third = (T)1 / 3;   
+        T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + 1);
         for (unsigned i=0;i<max_iter;i++) {
-            x = (x + s / x)*half;
+            T nx = div_by_pow2<T>(x + s / x, 1);
+            if ((s > 1 ? nx > s : nx < s)) break;
+            x = nx;
         };
         return x;
     }
@@ -112,10 +162,10 @@ namespace taylor {
         T poly = x;
         T x2 = x*x;
         for (unsigned i=0;i<18;i++) {
-            T part = (T)pochhammer_counters[i] / (1ULL << i) * poly / (gamma_tab[i] + 2 * i * gamma_tab[i]);
-            if (__glibc_unlikely(part <= 0)) return result;
+            T part = div_by_pow2<T>(pochhammer_counters[i], i) * poly / (gamma_tab[i] + gamma_tab[i] * (i << 1));
+            if (__glibc_unlikely(part <= 0)) break;
             T new_result = (result + part);
-            if (__glibc_unlikely(result == new_result)) return result;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x2;
         }
@@ -128,13 +178,14 @@ namespace taylor {
         constexpr const static T pi2 = M_PI / 2;
         x = 1-x;
         T result = 0;
-        T coeff = sqrt<T>(2*x);
+        T coeff = sqrt<T>(mul_by_pow2<T>(x, 1));
         T poly = 1;
         for (unsigned i=0;i<18;i++) {
-            T part = (T)pochhammer_counters[i] / (1ULL << (i<<1)) * poly / (gamma_tab[i] + 2 * i * gamma_tab[i]);
-            if (__glibc_unlikely(part <= 0)) return pi2 - coeff * result;
+            unsigned di = i << 1;
+            T part = div_by_pow2<T>(pochhammer_counters[i], di) * poly / (gamma_tab[i] + gamma_tab[i] * di);
+            if (__glibc_unlikely(part <= 0)) break;
             T new_result = (result + part);
-            if (__glibc_unlikely(result == new_result)) return pi2 - coeff * result;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x;
         }
@@ -144,11 +195,10 @@ namespace taylor {
 
     template<typename T>
     T calculate_asin_half() {
-        T test = 1;
-        test /= 2;
+        T test = div_by_pow2<T>(1, 2);
         T half = test;
         while (test > 0) {
-            test /= 2;
+            test = div_by_pow2<T>(test, 1);
             T test_half1 = half + test;
             T test_half2 = half - test;
             T diff1 = base_asin2<T>(test_half1) - base_asin1<T>(test_half1);
@@ -177,15 +227,17 @@ namespace taylor {
         x -= 1;
         T poly = x;
         T result = 0;
-        unsigned i = 1;
-        while (1) {
+        static const unsigned max_iter = std::round(
+            (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min()))
+        );   
+        for (unsigned i=1;i<max_iter;i++) {
             T part = poly / i;            
-            if (__glibc_unlikely(part > (T)(1) || part < (T)(-1) || part == 0)) return result;
-            T new_result = (i++ & 1) ? (result + part) : (result - part);
-            if (__glibc_unlikely(result == new_result)) return result;
+            T new_result = (i & 1) ? (result + part) : (result - part);
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x;
         }
+        return result;
     }
 
 
@@ -207,7 +259,7 @@ namespace taylor {
 
     template<typename T>
     T ln(T x) {
-        return (x < 2) ? ln_small<T>(x) : 2*ln(sqrt<T>(x)); //(ln<T>(x-1) - ln_part2<T>(x));
+        return ((x > 0.2) && x < (T)1.5f) ? ln_small<T>(x) : mul_by_pow2<T>(ln(sqrt<T>(x)), 1); //(ln<T>(x-1) - ln_part2<T>(x));
     }
 
 
