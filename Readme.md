@@ -88,25 +88,32 @@ std::cout << (fixed64)x + y << std::endl;
 
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
 
-<table><thead><th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><td>6968</td><td>6915</td><td>6298</td><td>38997</td><td>210320</td><td>21003</td><td>106477</td><td>64946</td><td>303379</td>
+<table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
+<tr><th>fixed32_s</th><th>taylormath</th><td>6979</td><td>6923</td><td>6917</td><td>65417</td><td>212729</td><td>85996</td><td>113790</td><td>361475</td><td>300039</td>
 
 </tr>
-<tr><th>fixed32_a</th><td>6964</td><td>6922</td><td>15727</td><td>201890</td><td>317346</td><td>21247</td><td>113273</td><td>65423</td><td>391420</td>
+<tr><th>fixed32_a</th><th>taylormath</th><td>6974</td><td>6923</td><td>15730</td><td>201891</td><td>320022</td><td>258273</td><td>171575</td><td>872021</td><td>391689</td>
 
 </tr>
-<tr><th>fixed64</th><td>13238</td><td>12586</td><td>21383</td><td>206306</td><td>874299</td><td>25047</td><td>300869</td><td>311184</td><td>1438529</td>
+<tr><th>fixed64</th><th>taylormath</th><td>13250</td><td>13210</td><td>20760</td><td>251596</td><td>877670</td><td>396637</td><td>396770</td><td>2214862</td><td>1437028</td>
 
 </tr>
-<tr><th>float</th><td>101469</td><td>105844</td><td>163517</td><td>255333</td><td>2047593</td><td>347401</td><td>537889</td><td>1543884</td><td>2036340</td>
+<tr><th>float</th><th>cmath</th><td>101477</td><td>105845</td><td>164147</td><td>254707</td><td>2025243</td><td>344891</td><td>535360</td><td>1527855</td><td>2016058</td>
 
 </tr>
-<tr><th>double</th><td>118846</td><td>121312</td><td>288670</td><td>494615</td><td>3052356</td><td>627820</td><td>846884</td><td>2358328</td><td>3022996</td>
+<tr><th>double</th><th>cmath</th><td>118830</td><td>121307</td><td>289297</td><td>495248</td><td>3027908</td><td>615168</td><td>843382</td><td>2339771</td><td>2997065</td>
+
+</tr>
+<tr><th>float</th><th>taylormath</th><td>101487</td><td>105845</td><td>164146</td><td>254708</td><td>2708557</td><td>1979590</td><td>1467575</td><td>8793024</td><td>4190190</td>
+
+</tr>
+<tr><th>double</th><th>taylormath</th><td>118837</td><td>121306</td><td>289296</td><td>495248</td><td>5849438</td><td>8746189</td><td>7214241</td><td>35363306</td><td>10262038</td>
 
 </tr>
 </tbody></table>
 
-Functions were computed using taylormath for fixed-point types and cmath for floating-point types
+<br>
+Taylormath calculates until increasing accuracy is not possible, so the more accurate type, the more time is needed to calculate a function.
 
 ### Taylormath accuracy 
 

@@ -19,9 +19,11 @@ SOURCRE_DIRECTORY = "src"
 TEST_FILE_FILTER = ".*([tT][eE][sS][tT]).*"
 INCLUDE_DIR_FILE = "include_dir"
 
-DEBUG_FLAGS = ["-std=c++11", "-Wall", "-g", "-fpermissive", "-fPIC"]
-RELEASE_FLAGS = ["-std=c++11", "-O3", "-Wall", "-Ofast", "-DNDEBUG", "-fpermissive", "-fPIC"]
-LINKING_PARAMS = ["-std=c++11", "-lm"]
+CPP_STANDARD = 11
+
+DEBUG_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-Wall", "-g", "-fpermissive", "-fPIC"]
+RELEASE_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-O3", "-Wall", "-Ofast", "-DNDEBUG", "-fpermissive", "-fPIC"]
+LINKING_PARAMS = ["-std=c++%d"%CPP_STANDARD, "-lm"]
 
 COMMAND_BUILD = "build"
 COMMAND_RELEASE = "release"

@@ -62,7 +62,7 @@ T quot_test(unsigned n) {
 template<typename T> 
 T math_test(T start, T stop, T step, const std::function<T(T)>& fun) {
   T result = 0;
-  T direction = 0;
+  bool direction = 0;
   for (T i=start;i<stop;i+=step) {
     if (direction)
       result -= fun(T(i));

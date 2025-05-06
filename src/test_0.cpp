@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 
 #include "lib/fixedpoint.h"
 
@@ -23,13 +24,13 @@ void compare_test_plus_minus(float lo, float hi, float inc, float epsilon) {
             c = a + b;
             fc = fa + fb;
             if (std::abs(fc - (float)c) > epsilon) {
-                std::cout << "Error at test " << test_no << ": " << ia << " + " << ib << " expected: " << fc << " got: " << c << std::endl;
+                std::cout << "Error at test [+] " << test_no << " of " << typeid(FP).name() << ": " << ia << " + " << ib << " expected: " << fc << " got: " << c << std::endl;
                 status_code = 1;
             }
             c = a - b;
             fc = fa - fb;
-            if (std::abs(fc - (float)c) > epsilon) {
-                std::cout << "Error at test " << test_no << " of " << typeid(FP).name() << ": " << ia << " - " << ib << " expected: " << fc << " got: " << c << std::endl;
+            if (std::abs(fc - (float)c) > epsilon) {                
+                std::cout << "Error at test [-] " << test_no << " of " << typeid(FP).name() << ": " << ia << " - " << ib << " expected: " << fc << " got: " << c << std::endl;
                 status_code = 1;
             }
         }
@@ -54,7 +55,7 @@ void compare_test_multiplication(float lo, float hi, float inc, float epsilon, f
             c = a * b;
             fc = fa * fb;
             if (std::abs(fc - (float)c) > std::max(epsilon, std::abs(fc)*epsilon_mult)) {
-                std::cout << "Error at test " << test_no << " of " << typeid(FP).name() << ": " << ia << " * " << ib << " expected: " << fc << " got: " << c << std::endl;
+                std::cout << "Error at test [*]" << test_no << " of " << typeid(FP).name() << ": " << ia << " * " << ib << " expected: " << fc << " got: " << c << std::endl;
                 status_code = 1;
             }
         }
@@ -80,7 +81,7 @@ void compare_test_division(float lo, float hi, float inc, float epsilon, float e
                 c = a / b;
                 fc = fa / fb;
                 if (std::abs(fc - (float)c) > std::max(epsilon, std::abs(fc)*epsilon_mult)) {
-                    std::cout << "Error at test " << test_no << " of " << typeid(FP).name() << ": " << ia << " / " << ib << " expected: " << fc << " got: " << c << std::endl;
+                    std::cout << "Error at test [/]" << test_no << " of " << typeid(FP).name() << ": " << ia << " / " << ib << " expected: " << fc << " got: " << c << std::endl;
                     status_code = 1;
                 }
             }
@@ -90,6 +91,8 @@ void compare_test_division(float lo, float hi, float inc, float epsilon, float e
 
 
 int main() {
+
+    std::cout << std::fixed << std::setw(8) << std::setprecision(8);
 
     for (float k=1;k<1000;k*=10) {
         compare_test_plus_minus<fixedpoint<int, int, 20>>(-3e-2*k, 3e-2*k, 1e-4*k, 2e-6);
