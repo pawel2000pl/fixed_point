@@ -186,10 +186,10 @@ class fixedpoint {
         }
 
         constexpr friend fixedpoint operator/(const fixedpoint first, const fixedpoint second) noexcept {
-            TC divisor = second.buf >> bits_shift_norm_element;
-            if (bits_shift_norm_element && (divisor == (divisor >> 1)))
-                return ((first.buf < 0) ^ (second.buf < 0)) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max();
-            return fixedpoint((((TC)first.buf << bits_shift_large_num) / divisor) << bits_shift_imp_element, true);
+            T divisor = second.buf >> bits_shift_norm_element;
+            return (bits_shift_norm_element && (divisor == (divisor >> 1)))
+                ? (((first.buf < 0) ^ (second.buf < 0)) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max())
+                : fixedpoint((((TC)first.buf << bits_shift_large_num) / (TC)divisor) << bits_shift_imp_element, true);
         }
 
         FIXED_POINT_INTEGER_TEMPLATE
@@ -199,10 +199,10 @@ class fixedpoint {
 
         FIXED_POINT_INTEGER_TEMPLATE
         constexpr friend fixedpoint operator/(const I first, const fixedpoint second) noexcept {            
-            TC divisor = second.buf >> bits_shift_norm_element;
-            if (bits_shift_norm_element && (divisor == (divisor >> 1)))
-                return ((first < 0) ^ (second.buf < 0)) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max();
-            return fixedpoint((((TC)first << (bits_shift_large_num + frac_bits)) / divisor) << bits_shift_imp_element, true);
+            T divisor = second.buf >> bits_shift_norm_element;
+            return (bits_shift_norm_element && (divisor == (divisor >> 1)))
+                ? (((first < 0) ^ (second.buf < 0)) ? std::numeric_limits<fixedpoint>::lowest() : std::numeric_limits<fixedpoint>::max())
+                : fixedpoint((((TC)first << (bits_shift_large_num + frac_bits)) / (TC)divisor) << bits_shift_imp_element, true);
         }
 
         FIXED_POINT_FLOAT_TEMPLATE
@@ -305,10 +305,10 @@ class fixedpoint {
         }
 
         void operator/=(const fixedpoint another) noexcept {                 
-            TC divisor = another.buf >> bits_shift_norm_element;
+            T divisor = another.buf >> bits_shift_norm_element;
             buf = (bits_shift_norm_element && (divisor == (divisor >> 1)))
                 ? (((buf < 0) ^ (another.buf < 0)) ? std::numeric_limits<T>::lowest() : std::numeric_limits<T>::max())
-                : (((TC)buf << bits_shift_large_num) / divisor) << bits_shift_imp_element;                      
+                : (((TC)buf << bits_shift_large_num) / (TC)divisor) << bits_shift_imp_element;                      
         }
 
         FIXED_POINT_INTEGER_TEMPLATE
