@@ -158,7 +158,7 @@ namespace taylor {
         T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + 1);
         for (unsigned i=0;i<max_iter;i++) {
             T nx = div_by_pow2<T>(x + s / x, 1);
-            if ((ps ? nx > s : nx < s)) break;
+            if (__glibc_unlikely(ps != (nx < s))) break;
             x = nx;
         };
         return x;
