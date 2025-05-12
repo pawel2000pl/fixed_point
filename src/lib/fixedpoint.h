@@ -34,7 +34,6 @@
 #include <typeindex>
 #include <type_traits>
 
-
 template<typename T>
 struct make_fast_int {
     using type = T;
@@ -99,11 +98,35 @@ class fixedpoint {
 
         template<typename T2, typename TC2>
         constexpr fixedpoint(const fixedpoint<T2, TC2, frac_bits>& another) noexcept
-         : buf(another.buf) {}
+         : buf(another.buf) {} 
 
         template<typename T2, typename TC2, unsigned frac_bits2>
          fixedpoint(const fixedpoint<T2, TC2, frac_bits2>& another) noexcept
          : buf((frac_bits > frac_bits2) ? ((T)another.buf << (frac_bits - frac_bits2)) : (another.buf >> (frac_bits2 - frac_bits))) {}
+
+        #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+        static typename std::enable_if<std::numeric_limits<float>::is_iec559 && sizeof(float) == 4, fixedpoint>::type 
+        from_float(float x) {
+            int exp = ((*(std::uint32_t*)(&x) >> 23) & 0xFF);
+            std::uint32_t y = *(std::uint32_t*)(&x) & 0x7FFFFF;
+            if (exp) y |= 0x800000;
+            exp = (127 + 23 - frac_bits) - exp;
+            T z = (exp < 0) ? y << (-exp) : y >> (exp);
+            return fixedpoint((*(std::uint32_t*)(&x) & 0x80000000) ? -z : z, true);
+        }
+
+        static typename std::enable_if<std::numeric_limits<double>::is_iec559 && sizeof(double) == 8, fixedpoint>::type 
+        from_double(double x) {
+            int exp = ((*(std::uint64_t*)(&x) >> 52) & 0x7FF);
+            std::uint64_t y = *(std::uint64_t*)(&x) & 0xFFFFFFFFFFFFFull;
+            if (exp) y |= 0x10000000000000ull;
+            exp = (1023 + 52 - frac_bits) - exp;            
+            T z = (exp < 0) ? y << (-exp) : y >> (exp);
+            return fixedpoint((*(std::int64_t*)(&x) & 0x8000000000000000ull) ? -z : z, true);
+        }
+        
+        #endif
 
         constexpr static fixedpoint buf_cast(const T buf) noexcept {
             return fixedpoint(buf, true);
@@ -534,7 +557,7 @@ class fixedpoint {
         static_assert(std::numeric_limits<TC>::is_integer, "Type for multiplication must be an integer type.");
         static_assert(std::is_signed<T>::value == std::is_signed<TC>::value, "T and TC must be both signed or unsigned.");
         static_assert(sizeof(T) * 8 - std::is_signed<T>::value > frac_bits, "There must be less fraction bits than number of bits in the buf type.");
-        static_assert(sizeof(T) <= sizeof(TC), "Type for multiplication must be equal or greater than buf type.");
+        static_assert(sizeof(T) <= sizeof(TC), "Type for multiplication must be equal or greater than buf type.");        
 
         #undef FIXED_POINT_BOOL_TEMPLATE
         #undef FIXED_POINT_INTEGER_TEMPLATE
@@ -547,9 +570,9 @@ class fixedpoint {
             return (a<b) ? a : b;
         }
 
-        constexpr const static auto bits_shift_large_num = min((sizeof(TC) - sizeof(T)) * 4, frac_bits);
-        constexpr const static auto bits_shift_norm_element = (frac_bits - bits_shift_large_num) >> 1;
-        constexpr const static auto bits_shift_imp_element = frac_bits - bits_shift_large_num - bits_shift_norm_element;
+        static constexpr const auto bits_shift_large_num = min((sizeof(TC) - sizeof(T)) * 4, frac_bits);
+        static constexpr const auto bits_shift_norm_element = (frac_bits - bits_shift_large_num) >> 1;
+        static constexpr const auto bits_shift_imp_element = frac_bits - bits_shift_large_num - bits_shift_norm_element;
 
         constexpr fixedpoint(const T new_buf, bool) noexcept : buf(new_buf) {}
 
@@ -619,12 +642,12 @@ namespace std {
 
     template<typename T, typename TC, unsigned frac_bits>
     struct make_signed<fixedpoint<T, TC, frac_bits>> {
-        fixedpoint<make_signed<T>, make_signed<TC>, frac_bits> type;
+        using type = fixedpoint<typename make_signed<T>::type, typename make_signed<TC>::type, frac_bits>;
     };
 
     template<typename T, typename TC, unsigned frac_bits>
     struct make_unsigned<fixedpoint<T, TC, frac_bits>> {
-        fixedpoint<make_unsigned<T>, make_unsigned<TC>, frac_bits> type;
+        using type = fixedpoint<typename make_unsigned<T>::type, typename make_unsigned<TC>::type, frac_bits>;
     };
 
     template<typename T, typename TC, unsigned frac_bits>
@@ -633,25 +656,25 @@ namespace std {
         using numeric_limits_t = numeric_limits<T>;
         using fp = fixedpoint<T, TC, frac_bits>;
 
-        static const auto is_specialized = true;
-        static const auto is_signed = (bool)std::is_signed<T>::value;
-        static const auto is_integer = false;
-        static const auto is_exact = numeric_limits_t::is_exact;
-        static const auto has_infinity = numeric_limits_t::has_infinity;
-        static const auto has_quiet_NaN = numeric_limits_t::has_quiet_NaN;
-        static const auto has_denorm = std::denorm_absent;
-        static const auto has_denorm_loss = false;
-        static const auto round_style = numeric_limits_t::round_style;
-        static const auto is_iec559 = false;
-        static const auto digits = numeric_limits_t::digits;
-        static const auto digits10 = numeric_limits_t::digits10;
-        static const auto radix = 2;
-        static const auto min_exponent = 0;
-        static const auto min_exponent10 = 0;
-        static const auto max_exponent = 0;
-        static const auto max_exponent10 = 0;
-        static const auto traps = numeric_limits_t::traps;
-        static const auto tinyness_before = numeric_limits_t::tinyness_before;
+        static constexpr const auto is_specialized = true;
+        static constexpr const auto is_signed = (bool)std::is_signed<T>::value;
+        static constexpr const auto is_integer = false;
+        static constexpr const auto is_exact = numeric_limits_t::is_exact;
+        static constexpr const auto has_infinity = numeric_limits_t::has_infinity;
+        static constexpr const auto has_quiet_NaN = numeric_limits_t::has_quiet_NaN;
+        static constexpr const auto has_denorm = std::denorm_absent;
+        static constexpr const auto has_denorm_loss = false;
+        static constexpr const auto round_style = numeric_limits_t::round_style;
+        static constexpr const auto is_iec559 = false;
+        static constexpr const auto digits = numeric_limits_t::digits;
+        static constexpr const auto digits10 = numeric_limits_t::digits10;
+        static constexpr const auto radix = 2;
+        static constexpr const auto min_exponent = 0;
+        static constexpr const auto min_exponent10 = 0;
+        static constexpr const auto max_exponent = 0;
+        static constexpr const auto max_exponent10 = 0;
+        static constexpr const auto traps = numeric_limits_t::traps;
+        static constexpr const auto tinyness_before = numeric_limits_t::tinyness_before;
 
         static constexpr fp min() noexcept {
             return fp(1, true);
