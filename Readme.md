@@ -9,6 +9,12 @@ Template dedicated for RISC-V 32 IM.
 All library files can be found in `src/lib/`.
 Just copy the files and include them.<br>
 Additionally `taylormath` need to be linked with its `cpp` file.
+<br>
+The library works with C++:
+* std-c++23
+* std-c++20
+* std-c++17
+* std-c++11 if you are not going to use constexpr functionalities (they works but not everywhere)
 
 ### Usage in code
 
@@ -82,6 +88,14 @@ std::cout << x + (fixed32)y << std::endl;
 std::cout << (fixed64)x + y << std::endl;
 ~~~
 
+### Conversions from IEEE754
+All conversions from floats works by multiplying float / double variable by some constant and then casting it to an integer type. It could be faster by using one of the following functions:
+
+* from_ieee754
+* from_float
+* from_double
+
+all of them might be faster or slower - it depends on the target platform. **Results of these functions could be also incorrect so always check results on the new target.** Although some assertions were made to avoid errors and thus in case of detection of an unsupported float/double format, these functions will use "standard" multiplication.
 
 
 ## Test results
