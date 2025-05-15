@@ -21,8 +21,8 @@ INCLUDE_DIR_FILE = "include_dir"
 
 CPP_STANDARD = 11
 
-DEBUG_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-Wall", "-g", "-fpermissive", "-fPIC"]
-RELEASE_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-O3", "-Wall", "-Ofast", "-DNDEBUG", "-fpermissive", "-fPIC"]
+DEBUG_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-Wall", "-Wextra", "-g", "-O1", "-fPIC"]
+RELEASE_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-O3", "-Wall", "-Wextra", "-Ofast", "-DNDEBUG", "-fPIC"]
 LINKING_PARAMS = ["-std=c++%d"%CPP_STANDARD, "-lm"]
 
 COMMAND_BUILD = "build"
