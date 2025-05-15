@@ -41,6 +41,12 @@
 #define __glibc_likely
 #endif
 
+#if __cplusplus >= 201402
+#define constexpr14 constexpr
+#else
+#define constexpr14
+#endif
+
 namespace taylor {
 
     extern std::size_t gamma_tab_size;
@@ -62,7 +68,7 @@ namespace taylor {
         static std::false_type test(...);
     
     public:
-        static constexpr bool value = decltype(test<T>(0))::value;
+        static constexpr const bool value = decltype(test<T>(0))::value;
     };
 
     template<typename T>
@@ -75,26 +81,26 @@ namespace taylor {
         static std::false_type test(...);
     
     public:
-        static constexpr bool value = decltype(test<T>(0))::value;
+        static constexpr const bool value = decltype(test<T>(0))::value;
     };
 
     template<typename T>
-    typename std::enable_if<has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
+    constexpr typename std::enable_if<has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
         return x << n;
     }
 
     template<typename T>
-    typename std::enable_if<!has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
+    constexpr typename std::enable_if<!has_shift_left<T>::value, T>::type mul_by_pow2(T x, unsigned n=1) {
         return x * ((std::size_t)1 << n);
     }
 
     template<typename T>
-    typename std::enable_if<has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
+    constexpr typename std::enable_if<has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
         return x >> n;
     }
 
     template<typename T>
-    typename std::enable_if<!has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
+    constexpr typename std::enable_if<!has_shift_right<T>::value, T>::type div_by_pow2(T x, unsigned n=1) {
         return x / ((std::size_t)1 << n);
     }
 
@@ -119,8 +125,8 @@ namespace taylor {
     template<typename T>
     T base_cos(T x) {
         if (x < 0) x = -x;
-        constexpr static T pi2 = M_PI / 2;
-        constexpr static T pi4 = M_PI / 4;
+        constexpr static const T pi2 = M_PI / 2;
+        constexpr static const T pi4 = M_PI / 4;
         unsigned n = std::floor(x / pi2);
         T rest = x - n * pi2;
         n &= 3;
@@ -132,7 +138,7 @@ namespace taylor {
 
     template<typename T>
     T sin(T x) {
-        constexpr static T pi2 = M_PI / 2;
+        constexpr static const T pi2 = M_PI / 2;
         return base_cos<T>(x - pi2);
     }
 
@@ -146,9 +152,9 @@ namespace taylor {
     template<typename T>
     T sqrt(T s) {
         if (s == 0 || s == 1) return T(s);
-        static const unsigned max_iter = std::round(std::sqrt(
+        constexpr14 static const unsigned max_iter = std::round(std::sqrt(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min())) / 2
-        ));   
+        ));
         constexpr static const T third = (T)1 / 3;   
         bool ps = s > 1;
         T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + 1);
@@ -179,7 +185,7 @@ namespace taylor {
 
     template<typename T>
     T base_asin2(T x) {
-        constexpr const static T pi2 = M_PI / 2;
+        constexpr static const T pi2 = M_PI / 2;
         x = 1-x;
         T result = 0;
         T coeff = sqrt<T>(mul_by_pow2<T>(x, 1));
@@ -213,7 +219,7 @@ namespace taylor {
 
     template<typename T>
     T base_asin_pos(T x) {
-        const static T half = calculate_asin_half<T>();
+        static const T half = calculate_asin_half<T>();
         return (x < half) ? base_asin1<T>(x) : base_asin2<T>(x);
     }
 
@@ -229,7 +235,7 @@ namespace taylor {
         x -= 1;
         T poly = x;
         T result = 0;
-        static const unsigned max_iter = std::round(
+        constexpr14 static const unsigned max_iter = std::round(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min()))
         );   
         for (unsigned i=1;i<max_iter;i++) {
