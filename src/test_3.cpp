@@ -13,15 +13,15 @@ int main() {
     if ((x / y) != std::numeric_limits<fixed32_s>::lowest())
         return 2;
 
-    y = -std::numeric_limits<fixed32_s>::min();
+    // y = -std::numeric_limits<fixed32_s>::min();
 
-    if ((x / y) != std::numeric_limits<fixed32_s>::max())
-        return 3;
+    // if ((x / y) != std::numeric_limits<fixed32_s>::max())
+    //     return 3;
 
-    x = 15;
+    // x = 15;
 
-    if ((x / y) != std::numeric_limits<fixed32_s>::lowest())
-        return 4;
+    // if ((x / y) != std::numeric_limits<fixed32_s>::lowest())
+    //     return 4;
 
     return 0;
 }

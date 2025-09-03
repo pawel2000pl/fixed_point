@@ -34,6 +34,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <iostream>
+
 #ifndef __glibc_unlikely
 #define __glibc_unlikely
 #endif

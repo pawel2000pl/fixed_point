@@ -2,3 +2,5 @@ bin
 src/test_polygon.cpp
 ArduinoFixedPointTest/lib
 plots/*.txt
+logs.txt
+.directory
