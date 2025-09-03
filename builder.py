@@ -19,7 +19,7 @@ SOURCRE_DIRECTORY = "src"
 TEST_FILE_FILTER = ".*([tT][eE][sS][tT]).*"
 INCLUDE_DIR_FILE = "include_dir"
 
-CPP_STANDARD = 11
+CPP_STANDARD = 14
 
 DEBUG_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-Wall", "-Wextra", "-g", "-O1", "-fPIC"]
 RELEASE_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-O3", "-Wall", "-Wextra", "-Ofast", "-DNDEBUG", "-fPIC"]
@@ -163,7 +163,7 @@ else:
         if crc != buildInfo["headers"].get(fileName, None):
             filesToBuild.extend(deps[fileName])
 
-filesToBuild = list(fn for fn in filesToBuild if fn.lower().endswith(".c") or fn.lower().endswith(".cpp"))
+filesToBuild = set(fn for fn in filesToBuild if fn.lower().endswith(".c") or fn.lower().endswith(".cpp"))
 
 flags = RELEASE_FLAGS if COMMAND_RELEASE in argv else DEBUG_FLAGS
 include_flags = ['-I'+ip for ip in include_paths]
