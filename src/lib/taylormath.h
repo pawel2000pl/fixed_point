@@ -159,7 +159,7 @@ namespace taylor {
         ));
         constexpr static const T third = (T)1 / 3;   
         bool ps = s > 1;
-        T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + 1);
+        T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + T(1));
         for (unsigned i=0;i<max_iter;i++) {
             T nx = div_by_pow2<T>(x + s / x, 1);
             if (__glibc_unlikely(ps != (nx < s))) break;

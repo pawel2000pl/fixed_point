@@ -105,25 +105,25 @@ all of them might be faster or slower - it depends on the target platform. **Res
 STARTING TESTS
 
 <table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><th>taylormath</th><td>6982</td><td>6916</td><td>6925</td><td>53469</td><td>190834</td><td>78826</td><td>112980</td><td>342369</td><td>303379</td>
+<tr><th>fixed32_s</th><th>taylormath</th><td>6984</td><td>6917</td><td>6923</td><td>48437</td><td>532716</td><td>88565</td><td>230457</td><td>383146</td><td>973161</td>
 
 </tr>
-<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6923</td><td>15722</td><td>201881</td><td>305426</td><td>261547</td><td>171984</td><td>878552</td><td>396626</td>
+<tr><th>fixed32_a</th><th>taylormath</th><td>6955</td><td>6924</td><td>15730</td><td>215094</td><td>662153</td><td>273412</td><td>267079</td><td>1462236</td><td>1082104</td>
 
 </tr>
-<tr><th>fixed64</th><th>taylormath</th><td>13249</td><td>13211</td><td>20760</td><td>205678</td><td>836790</td><td>384513</td><td>392332</td><td>2186356</td><td>1434525</td>
+<tr><th>fixed64</th><th>taylormath</th><td>13254</td><td>13212</td><td>20763</td><td>239018</td><td>887860</td><td>384202</td><td>432504</td><td>2078547</td><td>1532526</td>
 
 </tr>
-<tr><th>float</th><th>cmath</th><td>101480</td><td>105843</td><td>164144</td><td>254701</td><td>2025215</td><td>344885</td><td>535346</td><td>1527835</td><td>2016006</td>
+<tr><th>float</th><th>cmath</th><td>101477</td><td>105846</td><td>164148</td><td>254709</td><td>2025269</td><td>344895</td><td>535361</td><td>1527875</td><td>2016057</td>
 
 </tr>
-<tr><th>double</th><th>cmath</th><td>118830</td><td>121311</td><td>289294</td><td>495233</td><td>3026886</td><td>614698</td><td>843206</td><td>2339086</td><td>2996029</td>
+<tr><th>double</th><th>cmath</th><td>118831</td><td>121308</td><td>289303</td><td>495245</td><td>3027947</td><td>615179</td><td>843389</td><td>2339798</td><td>2997102</td>
 
 </tr>
-<tr><th>float</th><th>taylormath</th><td>101485</td><td>105844</td><td>163513</td><td>255336</td><td>2685984</td><td>1839360</td><td>1433765</td><td>8430123</td><td>4188721</td>
+<tr><th>float</th><th>taylormath</th><td>101503</td><td>105846</td><td>163518</td><td>255344</td><td>2686056</td><td>1839415</td><td>1433422</td><td>8430365</td><td>4188836</td>
 
 </tr>
-<tr><th>double</th><th>taylormath</th><td>118835</td><td>121303</td><td>288670</td><td>494603</td><td>5820529</td><td>8243711</td><td>7005986</td><td>34129127</td><td>10240732</td>
+<tr><th>double</th><th>taylormath</th><td>118838</td><td>121308</td><td>288678</td><td>494615</td><td>5821663</td><td>8244400</td><td>7006001</td><td>34130695</td><td>10262166</td>
 
 </tr>
 </tbody></table>

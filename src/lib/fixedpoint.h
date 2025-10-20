@@ -263,7 +263,7 @@ namespace fixedpoint_helpers {
         constexpr const static int div_c_increase = div_bc_change - div_b_decrease;
 
         constexpr static C divide(const A a, const B b) noexcept {
-            typename C::CALCULATE_TYPE divisor = make_buf<B, typename C::CALCULATE_TYPE, b_acc - div_b_decrease>(b);            
+            typename C::BUF_TYPE divisor = make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b);            
             return (divisor) ?
                 C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, div_c_increase>(make_buf<A, typename C::CALCULATE_TYPE, a_acc + div_a_increase>(a) / divisor)) :
                 ((a < 0) ? std::numeric_limits<C>::lowest() : std::numeric_limits<C>::max());
