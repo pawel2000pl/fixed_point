@@ -311,7 +311,7 @@ class fixedpoint {
 
         template<typename T2, typename TC2>
         constexpr fixedpoint(const fixedpoint<T2, TC2, frac_bits>& another) noexcept
-            : buf(another.buf) {} 
+            : buf(another.buf) {}
 
         template<typename T2, typename TC2, unsigned frac_bits2>
         constexpr fixedpoint(const fixedpoint<T2, TC2, frac_bits2>& another) noexcept
@@ -383,7 +383,7 @@ class fixedpoint {
         constexpr operator I() const noexcept {
             return buf >> frac_bits;
         }
-        
+
         FIXED_POINT_BOOL_TEMPLATE
         constexpr operator B() noexcept {
             return (B)buf;
@@ -530,7 +530,7 @@ class fixedpoint {
             buf[position++] = 0;
             fp = fixedpoint::fromCharBuf(buf);
             return stream;
-        }        
+        }
 
         friend struct std::numeric_limits<fixedpoint<T, TC, frac_bits>>;
 
@@ -545,7 +545,7 @@ class fixedpoint {
         static_assert(std::numeric_limits<TC>::is_integer, "Type for multiplication must be an integer type.");
         static_assert(std::is_signed<T>::value == std::is_signed<TC>::value, "T and TC must be both signed or unsigned.");
         static_assert(sizeof(T) * 8 - std::is_signed<T>::value > frac_bits, "There must be less fraction bits than number of bits in the buf type.");
-        static_assert(sizeof(T) <= sizeof(TC), "Type for multiplication must be equal or greater than buf type.");        
+        static_assert(sizeof(T) <= sizeof(TC), "Type for multiplication must be equal or greater than buf type.");
 
         #undef FIXED_POINT_BOOL_TEMPLATE
         #undef FIXED_POINT_INTEGER_TEMPLATE
