@@ -34,8 +34,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <iostream>
-
 #ifndef __glibc_unlikely
 #define __glibc_unlikely
 #endif
@@ -113,12 +111,12 @@ namespace taylor {
 
     template<typename T>
     constexpr bool diff_less_than_epsilon_neg(T a, T b) {
-        return diff_less_than_epsilon_pos(b, a);
+        return diff_less_than_epsilon_pos<T>(b, a);
     }
 
     template<typename T>
     constexpr bool diff_less_than_epsilon(T a, T b) {
-        return (a > b) ? diff_less_than_epsilon_pos(a, b) : diff_less_than_epsilon_neg(a, b);
+        return (a > b) ? diff_less_than_epsilon_pos<T>(a, b) : diff_less_than_epsilon_neg<T>(a, b);
     }
 
     template<typename T, bool sine>

@@ -95,8 +95,18 @@ namespace fixedpoint_helpers {
 
 
     template<typename T, int value>
-    constexpr static T static_signed_shl(T x) {
-        return value ? ((value >= 0) ? (x << value) : (x >> (-value))) : x;
+    static constexpr typename std::enable_if<value == 0, T>::type static_signed_shl(T x) {
+        return x;
+    }
+
+    template<typename T, int value>
+    static constexpr typename std::enable_if<(value < 0), T>::type static_signed_shl(T x) {
+        return x >> (-value);
+    }
+
+    template<typename T, int value>
+    static constexpr typename std::enable_if<(value > 0), T>::type static_signed_shl(T x) {
+        return x << value;
     }
 
 
@@ -157,22 +167,21 @@ namespace fixedpoint_helpers {
 
 
     template<typename T, typename RESULT_TYPE, int offset=0>
-    constexpr static typename std::enable_if<std::is_floating_point<T>::value, RESULT_TYPE>::type 
+    static constexpr typename std::enable_if<std::is_floating_point<T>::value, RESULT_TYPE>::type 
     make_buf(T x) noexcept {        
         return buf_from_ieee754<RESULT_TYPE, offset>(x);
     }
 
 
     template<typename T, typename RESULT_TYPE, int offset=0>
-    constexpr static typename std::enable_if<is_fixedpoint<T>::value, RESULT_TYPE>::type
+    static constexpr typename std::enable_if<is_fixedpoint<T>::value, RESULT_TYPE>::type
     make_buf(T x) noexcept {
-        using true_offset = std::integral_constant<int, offset - (int)T::fraction_bits>;
-        return static_signed_shl<RESULT_TYPE, true_offset::value>(x.getBuf());
+        return static_signed_shl<RESULT_TYPE, offset - (int)T::fraction_bits>(x.getBuf());
     }
 
 
     template<typename T, typename RESULT_TYPE, int offset=0>
-    constexpr static typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, RESULT_TYPE>::type
+    static constexpr typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, RESULT_TYPE>::type
     make_buf(T x) noexcept {
         return static_signed_shl<RESULT_TYPE, offset>(x);
     }
@@ -194,14 +203,14 @@ namespace fixedpoint_helpers {
 
     using fixed_t = fixedpoint<std::make_signed<std::size_t>::type, fixedpoint_helpers::make_fast_int<typename std::make_signed<std::size_t>::type>::type, sizeof(std::size_t) * 4 - 1>;
 
-    template<typename T>
-    struct as_fixed : std::conditional<is_fixedpoint<T>::value, T, typename std::conditional<std::is_integral<T>::value, fixedpoint<T, T, 0>, fixed_t>::type>::type {};
+    template<typename T, typename DEFAULT_TYPE=fixed_t, typename std::enable_if<is_fixedpoint<DEFAULT_TYPE>::value, void>::type* = nullptr>
+    struct as_fixed : std::conditional<is_fixedpoint<T>::value, T, typename std::conditional<std::is_integral<T>::value, fixedpoint<T, T, 0>, DEFAULT_TYPE>::type>::type {};
 
     template<typename A, typename B>
     struct result_type {
         constexpr const static bool is_signed = std::is_signed<A>::value || std::is_signed<B>::value;
-        using a_fixed = as_fixed<A>;
-        using b_fixed = as_fixed<B>;
+        using a_fixed = as_fixed<A, typename std::conditional<is_fixedpoint<B>::value, B, fixed_t>::type>;
+        using b_fixed = as_fixed<B, typename std::conditional<is_fixedpoint<A>::value, A, fixed_t>::type>;
         using larger_base_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename a_fixed::BUF_TYPE) > sizeof(typename b_fixed::BUF_TYPE)), typename a_fixed::BUF_TYPE, typename b_fixed::BUF_TYPE>::type>::type;
         using larger_operational_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename a_fixed::CALCULATE_TYPE) > sizeof(typename b_fixed::CALCULATE_TYPE)), typename a_fixed::CALCULATE_TYPE, typename b_fixed::CALCULATE_TYPE>::type>::type;
         using type = fixedpoint<larger_base_type, larger_operational_type, max(a_fixed::fraction_bits, b_fixed::fraction_bits)>;
@@ -231,7 +240,7 @@ namespace fixedpoint_helpers {
     };
 
     template<typename T, T value, T ap, T bp>
-    struct value_splitter : std::conditional<((value * ap) % (ap + bp) * 2 < (ap + bp)), value_splitter_a_floor<T, value, ap, bp>, value_splitter_b_floor<T, value, ap, bp>>::type {};
+    struct value_splitter : std::conditional<((ap + bp) > (value * ap) % (ap + bp) * 2), value_splitter_a_floor<T, value, ap, bp>, value_splitter_b_floor<T, value, ap, bp>>::type {};
 
 
     template<typename A, typename B, typename C = typename result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
@@ -256,10 +265,10 @@ namespace fixedpoint_helpers {
 
         FIXED_OPERATIONS_OPERATOR_MAKER(eq, ==)
         FIXED_OPERATIONS_OPERATOR_MAKER(neq, !=)
-        FIXED_OPERATIONS_OPERATOR_MAKER(gtr, >)
-        FIXED_OPERATIONS_OPERATOR_MAKER(geq, >=)
         FIXED_OPERATIONS_OPERATOR_MAKER(lss, <)
         FIXED_OPERATIONS_OPERATOR_MAKER(leq, <=)
+        FIXED_OPERATIONS_OPERATOR_MAKER(gtr, >)
+        FIXED_OPERATIONS_OPERATOR_MAKER(geq, >=)
 
         #undef FIXED_OPERATIONS_OPERATOR_MAKER
 
@@ -626,10 +635,10 @@ constexpr bool operator oper(const A a, const B b) noexcept {       \
 
 FIXED_POINT_OPERATOR_MAKER(==, eq)
 FIXED_POINT_OPERATOR_MAKER(!=, neq)
-FIXED_POINT_OPERATOR_MAKER(>=, geq)
 FIXED_POINT_OPERATOR_MAKER(<=, leq)
-FIXED_POINT_OPERATOR_MAKER(>, gtr)
+FIXED_POINT_OPERATOR_MAKER(>=, geq)
 FIXED_POINT_OPERATOR_MAKER(<, lss)
+FIXED_POINT_OPERATOR_MAKER(>, gtr)
 #undef FIXED_POINT_OPERATOR_MAKER
 
 #define FIXED_POINT_FIRST  template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value, void*>::type = nullptr>
