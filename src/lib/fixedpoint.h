@@ -207,6 +207,16 @@ namespace fixedpoint_helpers {
         using type = fixedpoint<larger_base_type, larger_operational_type, max(a_fixed::fraction_bits, b_fixed::fraction_bits)>;
     };
 
+        
+    template<typename BASE, typename ARG>
+    struct result_type_base {
+        constexpr const static bool is_signed = std::is_signed<BASE>::value || std::is_signed<ARG>::value;
+        using base_fixed = as_fixed<BASE>;
+        using arg_fixed = as_fixed<ARG>;
+        using larger_operational_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename base_fixed::CALCULATE_TYPE) > sizeof(typename arg_fixed::CALCULATE_TYPE)), typename base_fixed::CALCULATE_TYPE, typename arg_fixed::CALCULATE_TYPE>::type>::type;
+        using type = fixedpoint<typename base_fixed::BUF_TYPE, larger_operational_type, base_fixed::fraction_bits>;
+    };
+
 
     template<typename A, typename B, typename C = typename result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
     struct fixed_operations {
@@ -280,6 +290,11 @@ namespace fixedpoint_helpers {
 }
 
 
+#define FIXED_POINT_BOOL_TEMPLATE template<typename B, typename std::enable_if<std::is_same<B, bool>::value, B>::type* = nullptr>
+#define FIXED_POINT_INTEGER_TEMPLATE template<typename I, typename std::enable_if<std::is_integral<I>::value && !std::is_same<I, bool>::value, I>::type* = nullptr>
+#define FIXED_POINT_FLOAT_TEMPLATE template<typename FP, typename std::enable_if<std::is_floating_point<FP>::value, FP>::type* = nullptr>        
+
+
 template<typename T, typename TC=typename fixedpoint_helpers::make_fast_int<T>::type, unsigned frac_bits=sizeof(T)*4-1>
 class fixedpoint {
 
@@ -289,16 +304,7 @@ class fixedpoint {
         using CALCULATE_TYPE = TC;
         constexpr static const unsigned fraction_bits = frac_bits;
 
-        template<typename N>
-        struct is_number : std::integral_constant<bool, std::is_floating_point<N>::value || fixedpoint_helpers::is_fixedpoint<N>::value || (std::is_integral<N>::value && !std::is_same<bool, N>::value)> {};
-
-        #define FIXED_POINT_BOOL_TEMPLATE template<typename B, typename std::enable_if<std::is_same<B, bool>::value, B>::type* = nullptr>
-        #define FIXED_POINT_INTEGER_TEMPLATE template<typename I, typename std::enable_if<std::is_integral<I>::value && !std::is_same<I, bool>::value, I>::type* = nullptr>
-        #define FIXED_POINT_FLOAT_TEMPLATE template<typename FP, typename std::enable_if<std::is_floating_point<FP>::value, FP>::type* = nullptr>        
-        #define FIXED_POINT_NUMBER_TEMPLATE template<typename N, typename std::enable_if<is_number<N>::value, N>::type* = nullptr>
-
-
-        FIXED_POINT_NUMBER_TEMPLATE
+        template<typename N, typename std::enable_if<std::is_floating_point<N>::value || fixedpoint_helpers::is_fixedpoint<N>::value || (std::is_integral<N>::value && !std::is_same<bool, N>::value), N>::type* = nullptr>
         constexpr fixedpoint(const N value) noexcept : buf(fixedpoint_helpers::make_buf<N, T, frac_bits>(value)) {}
 
         constexpr fixedpoint() noexcept : buf(0) {}
@@ -608,35 +614,35 @@ FIXED_POINT_OPERATOR_MAKER(<=, leq)
 FIXED_POINT_OPERATOR_MAKER(>, gtr)
 FIXED_POINT_OPERATOR_MAKER(<, lss)
 #undef FIXED_POINT_OPERATOR_MAKER
-#undef FIXED_POINT_NUMBER_TEMPLATE
 
 #define FIXED_POINT_FIRST  template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value, void*>::type = nullptr>
 
 FIXED_POINT_FIRST
-void operator+=(A& a, const B b) noexcept {
-    a = fixedpoint_helpers::fixed_operations<A, B>::add(a, b);
+constexpr void operator+=(A& a, const B b) noexcept {
+    a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::add(a, b);
 }
 
 FIXED_POINT_FIRST
-void operator-=(A& a, const B b) noexcept {
-    a = fixedpoint_helpers::fixed_operations<A, B>::sub(a, b);
+constexpr void operator-=(A& a, const B b) noexcept {
+    a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::sub(a, b);
 }
 
 FIXED_POINT_FIRST
-void operator*=(A& a, const B b) noexcept {
-    a = fixedpoint_helpers::fixed_operations<A, B>::multiple(a, b);
+constexpr void operator*=(A& a, const B b) noexcept {
+    a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::multiple(a, b);
 }
 
 FIXED_POINT_FIRST
-void operator/=(A& a, const B b) noexcept {
-    a = fixedpoint_helpers::fixed_operations<A, B>::divide(a, b);
+constexpr void operator/=(A& a, const B b) noexcept {
+    a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::divide(a, b);
 }
 
 FIXED_POINT_FIRST
-void operator%=(A& a, const B b) noexcept {
-    a = fixedpoint_helpers::fixed_operations<A, B, A>::modulo(a, b);
+constexpr void operator%=(A& a, const B b) noexcept {
+    a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::modulo(a, b);
 }
 
+#undef FIXED_POINT_FIRST
 
 
 namespace std {
