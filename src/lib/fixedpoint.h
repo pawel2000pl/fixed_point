@@ -217,6 +217,21 @@ namespace fixedpoint_helpers {
         using type = fixedpoint<typename base_fixed::BUF_TYPE, larger_operational_type, base_fixed::fraction_bits>;
     };
 
+    template<typename T, T value, T ap, T bp>
+    struct value_splitter_a_floor {
+        constexpr const static T a_value = value * ap / (ap + bp);
+        constexpr const static T b_value = value - a_value;
+    };
+
+    template<typename T, T value, T ap, T bp>
+    struct value_splitter_b_floor {
+        constexpr const static T b_value = value * bp / (ap + bp);
+        constexpr const static T a_value = value - b_value;
+    };
+
+    template<typename T, T value, T ap, T bp>
+    struct value_splitter : std::conditional<(ap > bp), value_splitter_a_floor<T, value, ap, bp>, value_splitter_b_floor<T, value, ap, bp>>::type {};
+
 
     template<typename A, typename B, typename C = typename result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
     struct fixed_operations {
@@ -256,8 +271,8 @@ namespace fixedpoint_helpers {
         constexpr const static int mul_max_result_decrease = (sizeof(typename C::CALCULATE_TYPE) - sizeof(typename C::BUF_TYPE)) * 8;
         constexpr const static int mul_c_decrease = min(mul_max_result_decrease, mul_accuracy_decrease);
         constexpr const static int mul_ab_decrease = mul_accuracy_decrease - mul_c_decrease;
-        constexpr const static int mul_a_decrease = mul_ab_decrease * a_acc / (a_acc + b_acc);
-        constexpr const static int mul_b_decrease = mul_ab_decrease - mul_a_decrease;
+        constexpr const static int mul_a_decrease = value_splitter<int, mul_ab_decrease, a_acc, b_acc>::a_value;
+        constexpr const static int mul_b_decrease = value_splitter<int, mul_ab_decrease, a_acc, b_acc>::b_value;
 
         constexpr static C multiple(const A a, const B b) noexcept {
             return C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, -mul_c_decrease>(make_buf<A, typename C::CALCULATE_TYPE, a_acc - mul_a_decrease>(a) * make_buf<B, typename C::CALCULATE_TYPE, b_acc - mul_b_decrease>(b)));
@@ -269,8 +284,8 @@ namespace fixedpoint_helpers {
         constexpr const static int div_max_a_increase = (sizeof(typename C::CALCULATE_TYPE) - sizeof(typename as_fixed<A>::BUF_TYPE)) * 8;
         constexpr const static int div_a_increase = min(max(div_max_a_increase, c_acc - a_acc), div_accuracy_increase);
         constexpr const static int div_bc_change = div_accuracy_increase - div_a_increase;
-        constexpr const static int div_b_decrease = div_bc_change * b_acc / (b_acc + c_acc);
-        constexpr const static int div_c_increase = div_bc_change - div_b_decrease;
+        constexpr const static int div_b_decrease = value_splitter<int, div_bc_change, b_acc, c_acc>::a_value;
+        constexpr const static int div_c_increase = value_splitter<int, div_bc_change, b_acc, c_acc>::b_value;
 
         constexpr static C divide(const A a, const B b) noexcept {
             typename C::BUF_TYPE divisor = make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b);            
@@ -345,6 +360,7 @@ class fixedpoint {
             return  fixedpoint((counter << frac_bits) / denimonator, true);
         }
 
+        
         FIXED_POINT_INTEGER_TEMPLATE
         constexpr friend fixedpoint operator<<(const fixedpoint first, const I second) noexcept {
             return fixedpoint(first.buf << second, true);
