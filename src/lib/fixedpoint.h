@@ -95,17 +95,17 @@ namespace fixedpoint_helpers {
 
 
     template<typename T, int value>
-    static constexpr typename std::enable_if<value == 0, T>::type static_signed_shl(T x) {
+    static constexpr typename std::enable_if<value == 0, T>::type static_signed_shl(T x) noexcept {
         return x;
     }
 
     template<typename T, int value>
-    static constexpr typename std::enable_if<(value < 0), T>::type static_signed_shl(T x) {
+    static constexpr typename std::enable_if<(value < 0), T>::type static_signed_shl(T x) noexcept {
         return x >> (-value);
     }
 
     template<typename T, int value>
-    static constexpr typename std::enable_if<(value > 0), T>::type static_signed_shl(T x) {
+    static constexpr typename std::enable_if<(value > 0), T>::type static_signed_shl(T x) noexcept {
         return x << value;
     }
 
@@ -134,7 +134,7 @@ namespace fixedpoint_helpers {
 
     template<typename R, typename F, unsigned expected_size, unsigned fraction, unsigned exponents, int accuracy, typename int_buf = typename std::conditional<fraction <= 32, std::uint32_t, std::uint64_t>::type>
     static constexpr typename std::enable_if<float_to_fraction_use_multiplication<F, expected_size>::value, R>::type
-    buf_from_ieee754_generic(Union2<F, typename std::make_unsigned<int_buf>::type> input) {
+    buf_from_ieee754_generic(Union2<F, typename std::make_unsigned<int_buf>::type> input) noexcept {
         using u_int_buf = typename std::make_unsigned<int_buf>::type;
         using s_int_buf = typename std::make_signed<int_buf>::type;
         using exp_mask = std::integral_constant<u_int_buf, (((u_int_buf)1 << exponents) - 1) << fraction>;
@@ -151,17 +151,17 @@ namespace fixedpoint_helpers {
 
     template<typename R, typename F, unsigned expected_size, unsigned fraction, unsigned exponents, int accuracy, typename int_buf = typename std::conditional<fraction <= 32, std::uint32_t, std::uint64_t>::type>
     static constexpr typename std::enable_if<!float_to_fraction_use_multiplication<F, expected_size>::value, R>::type
-    buf_from_ieee754_generic(F x) {
+    buf_from_ieee754_generic(F x) noexcept {
         return x * ((R)1 << accuracy);
     }
 
     template<typename R, int accuracy>
-    static constexpr R buf_from_ieee754(float x) {
+    static constexpr R buf_from_ieee754(float x) noexcept {
         return buf_from_ieee754_generic<R, float, 4, 23, 8, accuracy, std::uint32_t>(x);
     }
 
     template<typename R, int accuracy>
-    static constexpr R buf_from_ieee754(double x) {
+    static constexpr R buf_from_ieee754(double x) noexcept {
         return buf_from_ieee754_generic<R, double, 8, 52, 11, accuracy, std::uint64_t>(x);
     }
 
@@ -186,11 +186,11 @@ namespace fixedpoint_helpers {
         return static_signed_shl<RESULT_TYPE, offset>(x);
     }
 
-    static constexpr int max(int a, int b) {
+    static constexpr int max(int a, int b) noexcept {
         return (a > b) ? a : b;
     }
 
-    static constexpr int min(int a, int b) {
+    static constexpr int min(int a, int b) noexcept {
         return (a < b) ? a : b;
     }
 
@@ -246,7 +246,7 @@ namespace fixedpoint_helpers {
     template<typename A, typename B, typename C = typename result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
     struct fixed_operations {
 
-        template<typename U> constexpr static typename C::BUF_TYPE make_c_buf(const U x) {
+        template<typename U> constexpr static typename C::BUF_TYPE make_c_buf(const U x) noexcept {
             return make_buf<U, typename C::BUF_TYPE, C::fraction_bits>(x);
         }
 

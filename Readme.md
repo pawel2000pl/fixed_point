@@ -102,8 +102,6 @@ all of them might be faster or slower - it depends on the target platform. **Res
 
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
 
-STARTING TESTS
-
 <table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
 <tr><th>fixed32_s</th><th>taylormath</th><td>6984</td><td>6917</td><td>6299</td><td>48432</td><td>529823</td><td>88568</td><td>216561</td><td>377093</td><td>954940</td>
 
