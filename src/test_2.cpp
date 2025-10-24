@@ -7,6 +7,8 @@
 #include <functional>
 #include <iomanip>
 
+#define TAYLOR_LOOP_COUNTER 1
+
 #include "lib/fixedpoint.h"
 #include "lib/taylormath.h"
 
@@ -14,9 +16,12 @@ template<typename T>
 void test_function(const std::string& filename, double start, double stop, unsigned n, const std::function<T(T)> fun) {
     std::ofstream file(filename);
     file << std::fixed << std::setw(32) << std::setprecision(32);
+    fun(0.1); // initialize of needed
     for (unsigned i=0;i<n;i++) {
+        taylor::loop_counter = 0;
         double x = start + i * (stop - start) / n;
-        file << x << "\t" << fun(x) << "\n";
+        const auto value = fun(x);
+        file << x << "\t" << value << "\t" << taylor::loop_counter << "\n";
     }
     file.close();
 }

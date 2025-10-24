@@ -3,7 +3,6 @@
 #include<Arduino.h>
 #include<cmath>
 #include<functional>
-#include<functional>
 
 #include "lib/fixedpoint.h"
 #include "lib/taylormath.h"
