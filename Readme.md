@@ -103,25 +103,25 @@ all of them might be faster or slower - it depends on the target platform. **Res
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
 
 <table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><th>taylormath</th><td>6984</td><td>6917</td><td>6299</td><td>48432</td><td>529823</td><td>88568</td><td>216561</td><td>377093</td><td>954940</td>
+<tr><th>fixed32_s</th><th>taylormath</th><td>6997</td><td>6923</td><td>6291</td><td>38998</td><td>502843</td><td>78624</td><td>207197</td><td>349685</td><td>899408</td>
 
 </tr>
-<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6923</td><td>15723</td><td>215729</td><td>663148</td><td>272583</td><td>259728</td><td>1409820</td><td>1054745</td>
+<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6923</td><td>15730</td><td>201884</td><td>634943</td><td>260499</td><td>249677</td><td>1379052</td><td>999560</td>
 
 </tr>
-<tr><th>fixed64</th><th>taylormath</th><td>13258</td><td>13212</td><td>20760</td><td>240274</td><td>912275</td><td>384365</td><td>403477</td><td>2042292</td><td>1539105</td>
+<tr><th>fixed64</th><th>taylormath</th><td>13248</td><td>13212</td><td>20762</td><td>206311</td><td>888863</td><td>389884</td><td>396304</td><td>2069122</td><td>1471446</td>
 
 </tr>
-<tr><th>float</th><th>cmath</th><td>101473</td><td>105846</td><td>164149</td><td>254711</td><td>2025271</td><td>344894</td><td>535366</td><td>1527870</td><td>2016058</td>
+<tr><th>float</th><th>cmath</th><td>101478</td><td>105839</td><td>163524</td><td>255334</td><td>2025276</td><td>344894</td><td>535362</td><td>1527878</td><td>2016057</td>
 
 </tr>
-<tr><th>double</th><th>cmath</th><td>118833</td><td>121308</td><td>289301</td><td>495254</td><td>3027948</td><td>615175</td><td>843388</td><td>2339807</td><td>2997101</td>
+<tr><th>double</th><th>cmath</th><td>118832</td><td>121308</td><td>288677</td><td>494622</td><td>3026964</td><td>614710</td><td>843229</td><td>2339152</td><td>2996110</td>
 
 </tr>
-<tr><th>float</th><th>taylormath</th><td>101470</td><td>105845</td><td>164147</td><td>254710</td><td>3190664</td><td>1834743</td><td>1586302</td><td>9610136</td><td>4867742</td>
+<tr><th>float</th><th>taylormath</th><td>101476</td><td>105845</td><td>163518</td><td>255343</td><td>3190664</td><td>1839418</td><td>1586320</td><td>9621808</td><td>4867242</td>
 
 </tr>
-<tr><th>double</th><th>taylormath</th><td>118838</td><td>121306</td><td>289303</td><td>495248</td><td>6833728</td><td>8233115</td><td>8171410</td><td>37451224</td><td>11661239</td>
+<tr><th>double</th><th>taylormath</th><td>118837</td><td>121314</td><td>288671</td><td>494622</td><td>6843760</td><td>8243932</td><td>8178865</td><td>37497165</td><td>11667931</td>
 
 </tr>
 </tbody></table>
