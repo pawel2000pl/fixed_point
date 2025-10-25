@@ -304,13 +304,25 @@ namespace fixedpoint_helpers {
         constexpr const static int div_bc_change = div_accuracy_increase - div_a_increase;
         constexpr const static int div_b_decrease = value_splitter_a_floor<int, div_bc_change, b_acc, c_acc>::a_value;
         constexpr const static int div_c_increase = value_splitter_a_floor<int, div_bc_change, b_acc, c_acc>::b_value;
-
-        FORCE_INLINE 
-        constexpr static C divide(const A a, const B b) noexcept {
+ 
+        template<int B_DEC>
+        FORCE_INLINE constexpr static typename std::enable_if<B_DEC != 0, C>::type 
+        __divide(const A a, const B b) noexcept {
             typename C::BUF_TYPE divisor = make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b);            
             return (divisor) ?
                 C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, div_c_increase>(make_buf<A, typename C::CALCULATE_TYPE, a_acc + div_a_increase>(a) / divisor)) :
                 ((a < 0) ? std::numeric_limits<C>::lowest() : std::numeric_limits<C>::max());
+        }
+             
+        template<int B_DEC>
+        FORCE_INLINE constexpr static typename std::enable_if<B_DEC == 0, C>::type 
+        __divide(const A a, const B b) noexcept {          
+            return C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, div_c_increase>(make_buf<A, typename C::CALCULATE_TYPE, a_acc + div_a_increase>(a) / make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b)));
+        }
+
+        FORCE_INLINE 
+        constexpr static C divide(const A a, const B b) noexcept {          
+            return __divide<div_b_decrease>(a, b);
         }
 
 
