@@ -198,23 +198,20 @@ namespace fixedpoint_helpers {
         return (a < b) ? a : b;
     }
 
-    template<typename T, typename U>
-    struct copy_signed : std::conditional<std::is_signed<T>::value, typename std::make_signed<U>::type, typename std::make_unsigned<U>::type> {};
-
     template<bool sign, typename U>
     struct set_sign : std::conditional<sign, typename std::make_signed<U>::type, typename std::make_unsigned<U>::type> {};
 
 
     using fixed_t = fixedpoint<std::make_signed<std::size_t>::type, fixedpoint_helpers::make_fast_int<typename std::make_signed<std::size_t>::type>::type, sizeof(std::size_t) * 4 - 1>;
 
-    template<typename T, typename DEFAULT_TYPE=fixed_t, typename std::enable_if<is_fixedpoint<DEFAULT_TYPE>::value, void>::type* = nullptr>
-    struct as_fixed : std::conditional<is_fixedpoint<T>::value, T, typename std::conditional<std::is_integral<T>::value, fixedpoint<T, T, 0>, DEFAULT_TYPE>::type>::type {};
+    template<typename T, typename T2=void, typename DEFAULT_TYPE=fixed_t, typename std::enable_if<is_fixedpoint<DEFAULT_TYPE>::value, void>::type* = nullptr>
+    struct as_fixed : std::conditional<is_fixedpoint<T>::value, T, typename std::conditional<is_fixedpoint<T2>::value, T2, DEFAULT_TYPE>::type>::type {};
 
     template<typename A, typename B>
     struct result_type {
         constexpr const static bool is_signed = std::is_signed<A>::value || std::is_signed<B>::value;
-        using a_fixed = as_fixed<A, typename std::conditional<is_fixedpoint<B>::value, B, fixed_t>::type>;
-        using b_fixed = as_fixed<B, typename std::conditional<is_fixedpoint<A>::value, A, fixed_t>::type>;
+        using a_fixed = as_fixed<A, B, fixed_t>;
+        using b_fixed = as_fixed<B, A, fixed_t>;
         using larger_base_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename a_fixed::BUF_TYPE) > sizeof(typename b_fixed::BUF_TYPE)), typename a_fixed::BUF_TYPE, typename b_fixed::BUF_TYPE>::type>::type;
         using larger_operational_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename a_fixed::CALCULATE_TYPE) > sizeof(typename b_fixed::CALCULATE_TYPE)), typename a_fixed::CALCULATE_TYPE, typename b_fixed::CALCULATE_TYPE>::type>::type;
         using type = fixedpoint<larger_base_type, larger_operational_type, max(a_fixed::fraction_bits, b_fixed::fraction_bits)>;
@@ -224,8 +221,8 @@ namespace fixedpoint_helpers {
     template<typename BASE, typename ARG>
     struct result_type_base {
         constexpr const static bool is_signed = std::is_signed<BASE>::value || std::is_signed<ARG>::value;
-        using base_fixed = as_fixed<BASE>;
-        using arg_fixed = as_fixed<ARG>;
+        using base_fixed = as_fixed<BASE, ARG, fixed_t>;
+        using arg_fixed = as_fixed<ARG, BASE, fixed_t>;
         using larger_operational_type = typename set_sign<is_signed, typename std::conditional<(sizeof(typename base_fixed::CALCULATE_TYPE) > sizeof(typename arg_fixed::CALCULATE_TYPE)), typename base_fixed::CALCULATE_TYPE, typename arg_fixed::CALCULATE_TYPE>::type>::type;
         using type = fixedpoint<typename base_fixed::BUF_TYPE, larger_operational_type, base_fixed::fraction_bits>;
     };
@@ -247,7 +244,7 @@ namespace fixedpoint_helpers {
     struct value_splitter : std::conditional<((ap + bp) > (value * ap) % (ap + bp) * 2), value_splitter_a_floor<T, value, ap, bp>, value_splitter_b_floor<T, value, ap, bp>>::type {};
 
 
-    template<typename A, typename B, typename C = typename result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
+    template<typename A, typename B, typename C = typename fixedpoint_helpers::result_type<A, B>::type, typename std::enable_if<is_fixedpoint<C>::value, void*>::type = nullptr>
     struct fixed_operations {
 
         template<typename U> FORCE_INLINE constexpr static typename C::BUF_TYPE make_c_buf(const U x) noexcept {
@@ -299,7 +296,7 @@ namespace fixedpoint_helpers {
 
         constexpr const static int div_raw_accuracy = a_acc - b_acc;
         constexpr const static int div_accuracy_increase = c_acc - div_raw_accuracy;
-        constexpr const static int div_max_a_increase = (sizeof(typename C::CALCULATE_TYPE) - sizeof(typename as_fixed<A>::BUF_TYPE)) * 8;
+        constexpr const static int div_max_a_increase = max(0, ((int)sizeof(typename C::CALCULATE_TYPE) - (int)sizeof(typename as_fixed<C>::BUF_TYPE)) * 8);
         constexpr const static int div_a_increase = min(max(div_max_a_increase, c_acc - a_acc), div_accuracy_increase);
         constexpr const static int div_bc_change = div_accuracy_increase - div_a_increase;
         constexpr const static int div_b_decrease = value_splitter_a_floor<int, div_bc_change, b_acc, c_acc>::a_value;
@@ -631,38 +628,35 @@ class fixedpoint {
 };
 
 
-#define FIXED_POINT_AT_LEAST_ONE template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value || fixedpoint_helpers::is_fixedpoint<B>::value, void*>::type = nullptr>
+#define FIXED_POINT_OPERATOR_PREFIX \
+    template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value || fixedpoint_helpers::is_fixedpoint<B>::value, void*>::type = nullptr> \
+    FORCE_INLINE constexpr typename fixedpoint_helpers::result_type<A, B>::type
 
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE
-constexpr auto operator+(const A a, const B b) noexcept {
-    return fixedpoint_helpers::fixed_operations<A, B>::add(a, b);
+FIXED_POINT_OPERATOR_PREFIX operator+(const A a, const B b) noexcept {
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::add(a, b);
 }
 
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE
-constexpr auto operator-(const A a, const B b) noexcept {
-    return fixedpoint_helpers::fixed_operations<A, B>::sub(a, b);
+FIXED_POINT_OPERATOR_PREFIX operator-(const A a, const B b) noexcept {
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::sub(a, b);
 }
 
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE
-constexpr auto operator*(const A a, const B b) noexcept {
-    return fixedpoint_helpers::fixed_operations<A, B>::multiple(a, b);
+FIXED_POINT_OPERATOR_PREFIX operator*(const A a, const B b) noexcept {
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::multiple(a, b);
 }
 
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE
-constexpr auto operator/(const A a, const B b) noexcept {
-    return fixedpoint_helpers::fixed_operations<A, B>::divide(a, b);
+FIXED_POINT_OPERATOR_PREFIX operator/(const A a, const B b) noexcept {
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::divide(a, b);
 }
 
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE
-constexpr auto operator%(const A a, const B b) noexcept {
-    return fixedpoint_helpers::fixed_operations<A, B>::modulo(a, b);
+FIXED_POINT_OPERATOR_PREFIX operator%(const A a, const B b) noexcept {
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::modulo(a, b);
 }
 
 
-#define FIXED_POINT_OPERATOR_MAKER(oper, name)                      \
-FIXED_POINT_AT_LEAST_ONE FORCE_INLINE                               \
-constexpr bool operator oper(const A a, const B b) noexcept {       \
-    return fixedpoint_helpers::fixed_operations<A, B>::name(a, b);  \
+#define FIXED_POINT_OPERATOR_MAKER(oper, name)                                                                                                                                  \
+template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value || fixedpoint_helpers::is_fixedpoint<B>::value, void*>::type = nullptr>    \
+FORCE_INLINE constexpr bool operator oper(const A a, const B b) noexcept {                                                                                                      \
+    return fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type<A, B>::type>::name(a, b);                                                        \
 }
 
 FIXED_POINT_OPERATOR_MAKER(==, eq)
@@ -673,34 +667,32 @@ FIXED_POINT_OPERATOR_MAKER(<, lss)
 FIXED_POINT_OPERATOR_MAKER(>, gtr)
 #undef FIXED_POINT_OPERATOR_MAKER
 
-#define FIXED_POINT_FIRST  template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value, void*>::type = nullptr>
+#undef FIXED_POINT_OPERATOR_PREFIX
+#define FIXED_POINT_OPERATOR_PREFIX \
+    template<typename A, typename B, typename std::enable_if<fixedpoint_helpers::is_fixedpoint<A>::value, void*>::type = nullptr> \
+    FORCE_INLINE constexpr void
 
-FIXED_POINT_FIRST FORCE_INLINE 
-constexpr void operator+=(A& a, const B b) noexcept {
+FIXED_POINT_OPERATOR_PREFIX operator+=(A& a, const B b) noexcept {
     a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::add(a, b);
 }
 
-FIXED_POINT_FIRST FORCE_INLINE 
-constexpr void operator-=(A& a, const B b) noexcept {
+FIXED_POINT_OPERATOR_PREFIX operator-=(A& a, const B b) noexcept {
     a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::sub(a, b);
 }
 
-FIXED_POINT_FIRST FORCE_INLINE 
-constexpr void operator*=(A& a, const B b) noexcept {
+FIXED_POINT_OPERATOR_PREFIX operator*=(A& a, const B b) noexcept {
     a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::multiple(a, b);
 }
 
-FIXED_POINT_FIRST FORCE_INLINE 
-constexpr void operator/=(A& a, const B b) noexcept {
+FIXED_POINT_OPERATOR_PREFIX operator/=(A& a, const B b) noexcept {
     a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::divide(a, b);
 }
 
-FIXED_POINT_FIRST FORCE_INLINE 
-constexpr void operator%=(A& a, const B b) noexcept {
+FIXED_POINT_OPERATOR_PREFIX operator%=(A& a, const B b) noexcept {
     a = fixedpoint_helpers::fixed_operations<A, B, typename fixedpoint_helpers::result_type_base<A, B>::type>::modulo(a, b);
 }
 
-#undef FIXED_POINT_FIRST
+#undef FIXED_POINT_OPERATOR_PREFIX
 
 
 namespace std {

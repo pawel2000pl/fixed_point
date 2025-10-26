@@ -19,7 +19,7 @@ SOURCRE_DIRECTORY = "src"
 TEST_FILE_FILTER = ".*([tT][eE][sS][tT]).*"
 INCLUDE_DIR_FILE = "include_dir"
 
-CPP_STANDARD = 14
+CPP_STANDARD = 11
 
 DEBUG_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-Wall", "-Wextra", "-g", "-O1", "-fPIC"]
 RELEASE_FLAGS = ["-std=c++%d"%CPP_STANDARD, "-O3", "-Wall", "-Wextra", "-Ofast", "-DNDEBUG", "-fPIC"]
