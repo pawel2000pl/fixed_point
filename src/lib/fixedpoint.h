@@ -131,11 +131,16 @@ namespace fixedpoint_helpers {
         union {F x; I i;} data;
     };
 
+    #ifdef FIXED_POINT_IEEE754_ALWAYS_MULTIPLICATE
     template<typename F, int expected_size>
-    struct float_to_fraction_use_multiplication : std::integral_constant<bool, std::numeric_limits<F>::is_iec559 && sizeof(F) == expected_size && is_little_endian::value && (cpp_version::value > 11)> {};
+    struct ieee754_to_fraction_use_cheat : std::integral_constant<bool, false> {};
+    #else
+    template<typename F, int expected_size>
+    struct ieee754_to_fraction_use_cheat : std::integral_constant<bool, std::numeric_limits<F>::is_iec559 && sizeof(F) == expected_size && is_little_endian::value && (cpp_version::value > 11)> {};
+    #endif
 
     template<typename R, typename F, unsigned expected_size, unsigned fraction, unsigned exponents, int accuracy, typename int_buf = typename std::conditional<fraction <= 32, std::uint32_t, std::uint64_t>::type>
-    static constexpr typename std::enable_if<float_to_fraction_use_multiplication<F, expected_size>::value, R>::type
+    static constexpr typename std::enable_if<ieee754_to_fraction_use_cheat<F, expected_size>::value, R>::type
     buf_from_ieee754_generic(Union2<F, typename std::make_unsigned<int_buf>::type> input) noexcept {
         using u_int_buf = typename std::make_unsigned<int_buf>::type;
         using s_int_buf = typename std::make_signed<int_buf>::type;
@@ -152,7 +157,7 @@ namespace fixedpoint_helpers {
     }
 
     template<typename R, typename F, unsigned expected_size, unsigned fraction, unsigned exponents, int accuracy, typename int_buf = typename std::conditional<fraction <= 32, std::uint32_t, std::uint64_t>::type>
-    static constexpr typename std::enable_if<!float_to_fraction_use_multiplication<F, expected_size>::value, R>::type
+    static constexpr typename std::enable_if<!ieee754_to_fraction_use_cheat<F, expected_size>::value, R>::type
     buf_from_ieee754_generic(F x) noexcept {
         return x * ((R)1 << accuracy);
     }
@@ -203,6 +208,7 @@ namespace fixedpoint_helpers {
 
 
     using fixed_t = fixedpoint<std::make_signed<std::size_t>::type, fixedpoint_helpers::make_fast_int<typename std::make_signed<std::size_t>::type>::type, sizeof(std::size_t) * 4 - 1>;
+    using ufixed_t = fixedpoint<std::make_unsigned<std::size_t>::type, fixedpoint_helpers::make_fast_int<typename std::make_unsigned<std::size_t>::type>::type, sizeof(std::size_t) * 4 - 1>;
 
     template<typename T, typename T2=void, typename DEFAULT_TYPE=fixed_t, typename std::enable_if<is_fixedpoint<DEFAULT_TYPE>::value, void>::type* = nullptr>
     struct as_fixed : std::conditional<is_fixedpoint<T>::value, T, typename std::conditional<is_fixedpoint<T2>::value, T2, DEFAULT_TYPE>::type>::type {};
@@ -859,6 +865,10 @@ using ufixed8_s = fixedpoint<std::uint8_t, std::uint8_t>;
 using ufixed16_s = fixedpoint<std::uint16_t, std::uint16_t>;
 using ufixed32_s = fixedpoint<std::uint32_t, std::uint32_t>;
 using ufixed64_s = fixedpoint<std::uint64_t, std::uint64_t>;
+
+// other types
+using fixed_t = fixedpoint_helpers::fixed_t;
+using ufixed_t = fixedpoint_helpers::ufixed_t;
 
 
 #endif

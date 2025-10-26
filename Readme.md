@@ -77,26 +77,21 @@ There are predefinied types:
         * ufixed32_s - unsigned 32 bit `T`, 32 bit type for `TC`, 15 fraction bits
         * ufixed64_s - unsigned 64 bit `T`, 64 bit type for `TC`, 31 fraction bits
 
-### Problem with operators
+* Other types (based on `std::size_t`)
 
-Due to possible inconsistency of result type on calculations of various fixedpoints both operands should be the same type. But it is not something that you must remember because the compiler will remind you.<br>
-The solution is to use casting, f.e.: 
-~~~
-fixed32 x = 7.35;
-fixed64 y = 21.37;
-std::cout << x + (fixed32)y << std::endl;
-std::cout << (fixed64)x + y << std::endl;
-~~~
+    * signed
+
+        * fixed_t - signed `std::size_t` for `T`, fast signed `std::size_t` for `TC`, `sizeof(std::size_t) * 4 - 1` fraction bits;
+
+    * unsigned
+
+        * ufixed_t - unsigned `std::size_t` for `T`, fast unsigned `std::size_t` for `TC`, `sizeof(std::size_t) * 4 - 1` fraction bits;
 
 ### Conversions from IEEE754
-All conversions from floats works by multiplying float / double variable by some constant and then casting it to an integer type. It could be faster by using one of the following functions:
 
-* from_ieee754
-* from_float
-* from_double
-
-all of them might be faster or slower - it depends on the target platform. **Results of these functions could be also incorrect so always check results on the new target.** Although some assertions were made to avoid errors and thus in case of detection of an unsupported float/double format, these functions will use "standard" multiplication.
-
+ Results of conversion from IEEE754 might be incorrect due to reading the numbers binary. 
+ Always check results on the new target.
+ In case of any errors use FIXED_POINT_IEEE754_ALWAYS_MULTIPLICATE macro.
 
 ## Test results
 
@@ -139,3 +134,13 @@ Differences with double and cmath as reference.<br>
 ![log plot](plots/plot_log.png)
 ![exp plot](plots/plot_exp.png)
 ![sqrt plot](plots/plot_sqrt.png)
+
+### Taylormath iterations 
+
+![asin plot](plots/plot_asin_iterations.png)
+![cos plot](plots/plot_cos_iterations.png)
+![sin plot](plots/plot_sin_iterations.png)
+![log plot](plots/plot_log_iterations.png)
+![exp plot](plots/plot_exp_iterations.png)
+![sqrt plot](plots/plot_sqrt_iterations.png)
+
