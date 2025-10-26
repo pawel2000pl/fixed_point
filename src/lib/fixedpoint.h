@@ -288,9 +288,11 @@ namespace fixedpoint_helpers {
         constexpr const static int mul_a_decrease = value_splitter<int, mul_ab_decrease, a_acc, b_acc>::a_value;
         constexpr const static int mul_b_decrease = value_splitter<int, mul_ab_decrease, a_acc, b_acc>::b_value;
 
+        using multiple_operational_type = typename std::conditional<mul_accuracy_decrease == 0, typename C::BUF_TYPE, typename C::CALCULATE_TYPE>::type;
+
         FORCE_INLINE 
         constexpr static C multiple(const A a, const B b) noexcept {
-            return C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, -mul_c_decrease>(make_buf<A, typename C::CALCULATE_TYPE, a_acc - mul_a_decrease>(a) * make_buf<B, typename C::CALCULATE_TYPE, b_acc - mul_b_decrease>(b)));
+            return C::buf_cast(static_signed_shl<multiple_operational_type, -mul_c_decrease>(make_buf<A, multiple_operational_type, a_acc - mul_a_decrease>(a) * make_buf<B, multiple_operational_type, b_acc - mul_b_decrease>(b)));
         }
 
 
@@ -302,19 +304,21 @@ namespace fixedpoint_helpers {
         constexpr const static int div_b_decrease = value_splitter_a_floor<int, div_bc_change, b_acc, c_acc>::a_value;
         constexpr const static int div_c_increase = value_splitter_a_floor<int, div_bc_change, b_acc, c_acc>::b_value;
  
+        using division_operational_type = typename std::conditional<div_a_increase == 0 && div_c_increase == 0, typename C::BUF_TYPE, typename C::CALCULATE_TYPE>::type;
+
         template<int B_DEC>
         FORCE_INLINE constexpr static typename std::enable_if<B_DEC != 0, C>::type 
         __divide(const A a, const B b) noexcept {
             typename C::BUF_TYPE divisor = make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b);            
             return (divisor) ?
-                C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, div_c_increase>(make_buf<A, typename C::CALCULATE_TYPE, a_acc + div_a_increase>(a) / divisor)) :
+                C::buf_cast(static_signed_shl<division_operational_type, div_c_increase>(make_buf<A, division_operational_type, a_acc + div_a_increase>(a) / divisor)) :
                 ((a < 0) ? std::numeric_limits<C>::lowest() : std::numeric_limits<C>::max());
         }
-             
+
         template<int B_DEC>
         FORCE_INLINE constexpr static typename std::enable_if<B_DEC == 0, C>::type 
         __divide(const A a, const B b) noexcept {          
-            return C::buf_cast(static_signed_shl<typename C::CALCULATE_TYPE, div_c_increase>(make_buf<A, typename C::CALCULATE_TYPE, a_acc + div_a_increase>(a) / make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b)));
+            return C::buf_cast(static_signed_shl<division_operational_type, div_c_increase>(make_buf<A, division_operational_type, a_acc + div_a_increase>(a) / make_buf<B, typename C::BUF_TYPE, b_acc - div_b_decrease>(b)));
         }
 
         FORCE_INLINE 

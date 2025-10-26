@@ -111,21 +111,7 @@ namespace taylor {
         return x / ((std::size_t)1 << n);
     }
 
-    template<typename T>
-    constexpr bool diff_less_than_epsilon_pos(T a, T b) {
-        return (a - b) <= std::numeric_limits<T>::min();
-    }
-
-    template<typename T>
-    constexpr bool diff_less_than_epsilon_neg(T a, T b) {
-        return diff_less_than_epsilon_pos<T>(b, a);
-    }
-
-    template<typename T>
-    constexpr bool diff_less_than_epsilon(T a, T b) {
-        return (a > b) ? diff_less_than_epsilon_pos<T>(a, b) : diff_less_than_epsilon_neg<T>(a, b);
-    }
-
+    
     template<typename T, bool sine>
     T base_trig_pos(T x) {
         T result = 0;
@@ -136,7 +122,7 @@ namespace taylor {
             if (__glibc_unlikely(poly <= 0)) break;
             T part = poly / gamma_tab[i];
             T new_result = (i & 2) ? (result - part) : (result + part);
-            if (diff_less_than_epsilon(result, new_result)) break;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x2;
         }
@@ -199,7 +185,7 @@ namespace taylor {
             TAYLOR_INCREMENT_LOOP_COUNTER;
             T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);            
             T new_result = result + part;
-            if (diff_less_than_epsilon_neg(result, new_result)) break;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x2;
         }
@@ -218,7 +204,7 @@ namespace taylor {
             TAYLOR_INCREMENT_LOOP_COUNTER;
             T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i << 1);
             T new_result = result + part;
-            if (diff_less_than_epsilon_neg(result, new_result)) break;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x;
         }
@@ -267,7 +253,7 @@ namespace taylor {
             TAYLOR_INCREMENT_LOOP_COUNTER;
             T part = poly / i;            
             T new_result = (i & 1) ? (result + part) : (result - part);
-            if (diff_less_than_epsilon(result, new_result)) break;
+            if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
             poly *= x;
         }
@@ -313,7 +299,7 @@ namespace taylor {
             T part = poly / gamma_tab[i];
             if (__glibc_unlikely(part <= 0)) return result;
             T new_result = result + part;
-            if (diff_less_than_epsilon_neg(result, new_result)) return result;
+            if (__glibc_unlikely(result == new_result)) return result;
             result = new_result;
             poly *= x;
         }
