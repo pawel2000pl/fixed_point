@@ -29,7 +29,7 @@ void compare_test_plus_minus(float lo, float hi, float inc, float epsilon) {
             }
             c = a - b;
             fc = fa - fb;
-            if (std::abs(fc - (float)c) > epsilon) {                
+            if (std::abs(fc - (float)c) > epsilon) {
                 std::cout << "Error at test [-] " << test_no << " of " << typeid(FP).name() << ": " << ia << " - " << ib << " expected: " << fc << " got: " << c << std::endl;
                 status_code = 1;
             }

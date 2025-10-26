@@ -43,7 +43,7 @@ int main() {
     test_function<double>("plots/double_taylor_asin.txt", -1, 1, n, taylor::asin<double>);
     test_function<double>("plots/double_taylor_log.txt", 1e-3, 10, n, taylor::log<double>);
     test_function<double>("plots/double_taylor_exp.txt", -10, 10, n, taylor::exp<double>);
-    
+
     test_function<float>("plots/float_std_cos.txt", -10, 10, n, cos);
     test_function<float>("plots/float_std_sin.txt", -10, 10, n, sin);
     test_function<float>("plots/float_std_sqrt.txt", 0, 16, n, sqrt);

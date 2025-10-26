@@ -30,6 +30,6 @@ int main() {
     if (std::abs(fixed32::from_double(-2.0f) - fixed32::from_double(-2.0f)) > 1e-4f) return 1;
     if (std::abs(fixed32::from_double(-20.f) - fixed32::from_double(-20.0f)) > 1e-4f) return 1;
 
-    return 0; // this is a test polygon
+    return 0;
 
 }

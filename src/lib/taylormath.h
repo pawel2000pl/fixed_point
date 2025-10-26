@@ -70,10 +70,10 @@ namespace taylor {
     private:
         template<typename U>
         static auto test(int) -> decltype(std::declval<U>() << std::declval<int>(), std::true_type());
-    
+
         template<typename>
         static std::false_type test(...);
-    
+
     public:
         static constexpr const bool value = decltype(test<T>(0))::value;
     };
@@ -83,10 +83,10 @@ namespace taylor {
     private:
         template<typename U>
         static auto test(int) -> decltype(std::declval<U>() >> std::declval<int>(), std::true_type());
-    
+
         template<typename>
         static std::false_type test(...);
-    
+
     public:
         static constexpr const bool value = decltype(test<T>(0))::value;
     };
@@ -111,7 +111,7 @@ namespace taylor {
         return x / ((std::size_t)1 << n);
     }
 
-    
+
     template<typename T, bool sine>
     T base_trig_pos(T x) {
         T result = 0;
@@ -163,7 +163,7 @@ namespace taylor {
         constexpr14 static const unsigned max_iter = std::round(std::sqrt(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min())) / 2
         ));
-        constexpr static const T third = (T)1 / 3;   
+        constexpr static const T third = (T)1 / 3;
         bool ps = s > 1;
         T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + T(1));
         for (unsigned i=0;i<max_iter;i++) {
@@ -183,7 +183,7 @@ namespace taylor {
         T x2 = x*x;
         for (unsigned i=0;i<asin_divisors_tab_size;i++) {
             TAYLOR_INCREMENT_LOOP_COUNTER;
-            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);            
+            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);
             T new_result = result + part;
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
@@ -248,10 +248,10 @@ namespace taylor {
         T result = 0;
         constexpr14 static const unsigned max_iter = std::round(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min()))
-        );   
+        );
         for (unsigned i=1;i<max_iter;i++) {
             TAYLOR_INCREMENT_LOOP_COUNTER;
-            T part = poly / i;            
+            T part = poly / i;
             T new_result = (i & 1) ? (result + part) : (result - part);
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;

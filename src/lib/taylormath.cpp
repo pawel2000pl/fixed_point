@@ -59,7 +59,7 @@ namespace taylor {
         return 1;
     }
 
-    
+
     bool constants_initilized = initialize_constants();
 
 
