@@ -25,8 +25,8 @@
 ****************************************************************************************/
 
 
-#ifndef FIXED_MATH
-#define FIXED_MATH
+#ifndef TAYLOR_MATH
+#define TAYLOR_MATH
 
 #include <cmath>
 #include <limits>
@@ -57,16 +57,23 @@ namespace taylor {
     extern std::uint64_t pochhammer_counters[];
 
     extern bool constants_initilized;
+    extern std::size_t loop_counter;
+
+    #ifdef TAYLOR_LOOP_COUNTER
+        #define TAYLOR_INCREMENT_LOOP_COUNTER {loop_counter++;}
+    #else
+        #define TAYLOR_INCREMENT_LOOP_COUNTER {}
+    #endif
 
     template<typename T>
     struct has_shift_left {
     private:
         template<typename U>
         static auto test(int) -> decltype(std::declval<U>() << std::declval<int>(), std::true_type());
-    
+
         template<typename>
         static std::false_type test(...);
-    
+
     public:
         static constexpr const bool value = decltype(test<T>(0))::value;
     };
@@ -76,10 +83,10 @@ namespace taylor {
     private:
         template<typename U>
         static auto test(int) -> decltype(std::declval<U>() >> std::declval<int>(), std::true_type());
-    
+
         template<typename>
         static std::false_type test(...);
-    
+
     public:
         static constexpr const bool value = decltype(test<T>(0))::value;
     };
@@ -111,6 +118,7 @@ namespace taylor {
         T poly = sine ? x : (T)1;
         T x2 = x*x;
         for (unsigned i=sine;i<gamma_tab_size;i+=2) {
+            TAYLOR_INCREMENT_LOOP_COUNTER;
             if (__glibc_unlikely(poly <= 0)) break;
             T part = poly / gamma_tab[i];
             T new_result = (i & 2) ? (result - part) : (result + part);
@@ -155,10 +163,11 @@ namespace taylor {
         constexpr14 static const unsigned max_iter = std::round(std::sqrt(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min())) / 2
         ));
-        constexpr static const T third = (T)1 / 3;   
+        constexpr static const T third = (T)1 / 3;
         bool ps = s > 1;
-        T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + 1);
+        T x = (s < third) ? mul_by_pow2<T>(s, 1) : (div_by_pow2<T>(s - 1, 1) + T(1));
         for (unsigned i=0;i<max_iter;i++) {
+            TAYLOR_INCREMENT_LOOP_COUNTER;
             T nx = div_by_pow2<T>(x + s / x, 1);
             if (__glibc_unlikely(ps != (nx < s))) break;
             x = nx;
@@ -173,7 +182,8 @@ namespace taylor {
         T poly = x;
         T x2 = x*x;
         for (unsigned i=0;i<asin_divisors_tab_size;i++) {
-            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);            
+            TAYLOR_INCREMENT_LOOP_COUNTER;
+            T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i);
             T new_result = result + part;
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
@@ -191,6 +201,7 @@ namespace taylor {
         T coeff = sqrt<T>(mul_by_pow2<T>(x, 1));
         T poly = 1;
         for (unsigned i=0;i<asin_divisors_tab_size;i++) {
+            TAYLOR_INCREMENT_LOOP_COUNTER;
             T part = div_by_pow2<T>(pochhammer_counters[i] * poly / asin_divisors_tab[i], i << 1);
             T new_result = result + part;
             if (__glibc_unlikely(result == new_result)) break;
@@ -237,9 +248,10 @@ namespace taylor {
         T result = 0;
         constexpr14 static const unsigned max_iter = std::round(
             (std::log2((double)std::numeric_limits<T>::max()) - std::log2((double)std::numeric_limits<T>::min()))
-        );   
+        );
         for (unsigned i=1;i<max_iter;i++) {
-            T part = poly / i;            
+            TAYLOR_INCREMENT_LOOP_COUNTER;
+            T part = poly / i;
             T new_result = (i & 1) ? (result + part) : (result - part);
             if (__glibc_unlikely(result == new_result)) break;
             result = new_result;
@@ -256,6 +268,7 @@ namespace taylor {
     //     T result = 0;
     //     unsigned i = 1;
     //     while (1) {
+    //         TAYLOR_INCREMENT_LOOP_COUNTER;
     //         T part = 1 / (poly * i);
     //         T new_result = (++i & 1) ? (result + part) : (result - part);
     //         if (__glibc_unlikely(result == new_result)) return result;
@@ -282,6 +295,7 @@ namespace taylor {
         T poly = 1;
         T result = 0;
         for (unsigned i=0;i<gamma_tab_size;i++) {
+            TAYLOR_INCREMENT_LOOP_COUNTER;
             T part = poly / gamma_tab[i];
             if (__glibc_unlikely(part <= 0)) return result;
             T new_result = result + part;

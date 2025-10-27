@@ -77,53 +77,46 @@ There are predefinied types:
         * ufixed32_s - unsigned 32 bit `T`, 32 bit type for `TC`, 15 fraction bits
         * ufixed64_s - unsigned 64 bit `T`, 64 bit type for `TC`, 31 fraction bits
 
-### Problem with operators
+* Other types (based on `std::size_t`)
 
-Due to possible inconsistency of result type on calculations of various fixedpoints both operands should be the same type. But it is not something that you must remember because the compiler will remind you.<br>
-The solution is to use casting, f.e.: 
-~~~
-fixed32 x = 7.35;
-fixed64 y = 21.37;
-std::cout << x + (fixed32)y << std::endl;
-std::cout << (fixed64)x + y << std::endl;
-~~~
+    * signed
+
+        * fixed_t - signed `std::size_t` for `T`, fast signed `std::size_t` for `TC`, `sizeof(std::size_t) * 4 - 1` fraction bits;
+
+    * unsigned
+
+        * ufixed_t - unsigned `std::size_t` for `T`, fast unsigned `std::size_t` for `TC`, `sizeof(std::size_t) * 4 - 1` fraction bits;
 
 ### Conversions from IEEE754
-All conversions from floats works by multiplying float / double variable by some constant and then casting it to an integer type. It could be faster by using one of the following functions:
 
-* from_ieee754
-* from_float
-* from_double
-
-all of them might be faster or slower - it depends on the target platform. **Results of these functions could be also incorrect so always check results on the new target.** Although some assertions were made to avoid errors and thus in case of detection of an unsupported float/double format, these functions will use "standard" multiplication.
-
+ Results of conversion from IEEE754 might be incorrect due to reading the numbers binary. 
+ Always check results on the new target.
+ In case of any errors use FIXED_POINT_IEEE754_ALWAYS_MULTIPLICATE macro.
 
 ## Test results
 
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
 
-STARTING TESTS
-
 <table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><th>taylormath</th><td>6982</td><td>6916</td><td>6925</td><td>53469</td><td>190834</td><td>78826</td><td>112980</td><td>342369</td><td>303379</td>
+<tr><th>fixed32_s</th><th>taylormath</th><td>6980</td><td>6917</td><td>6921</td><td>38997</td><td>187894</td><td>78628</td><td>113231</td><td>343401</td><td>294970</td>
 
 </tr>
-<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6923</td><td>15722</td><td>201881</td><td>305426</td><td>261547</td><td>171984</td><td>878552</td><td>396626</td>
+<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6924</td><td>15729</td><td>201254</td><td>306980</td><td>256226</td><td>171002</td><td>865186</td><td>394723</td>
 
 </tr>
-<tr><th>fixed64</th><th>taylormath</th><td>13249</td><td>13211</td><td>20760</td><td>205678</td><td>836790</td><td>384513</td><td>392332</td><td>2186356</td><td>1434525</td>
+<tr><th>fixed64</th><th>taylormath</th><td>13268</td><td>13211</td><td>20755</td><td>205680</td><td>836382</td><td>384171</td><td>392481</td><td>2007695</td><td>1436104</td>
 
 </tr>
-<tr><th>float</th><th>cmath</th><td>101480</td><td>105843</td><td>164144</td><td>254701</td><td>2025215</td><td>344885</td><td>535346</td><td>1527835</td><td>2016006</td>
+<tr><th>float</th><th>cmath</th><td>101481</td><td>105843</td><td>164146</td><td>254703</td><td>2026087</td><td>336237</td><td>533432</td><td>1527398</td><td>2015375</td>
 
 </tr>
-<tr><th>double</th><th>cmath</th><td>118830</td><td>121311</td><td>289294</td><td>495233</td><td>3026886</td><td>614698</td><td>843206</td><td>2339086</td><td>2996029</td>
+<tr><th>double</th><th>cmath</th><td>118823</td><td>121311</td><td>289295</td><td>495235</td><td>3022846</td><td>613325</td><td>841096</td><td>2339528</td><td>2995495</td>
 
 </tr>
-<tr><th>float</th><th>taylormath</th><td>101485</td><td>105844</td><td>163513</td><td>255336</td><td>2685984</td><td>1839360</td><td>1433765</td><td>8430123</td><td>4188721</td>
+<tr><th>float</th><th>taylormath</th><td>101481</td><td>105843</td><td>164145</td><td>254704</td><td>2690285</td><td>1834694</td><td>1432962</td><td>8418461</td><td>4189229</td>
 
 </tr>
-<tr><th>double</th><th>taylormath</th><td>118835</td><td>121303</td><td>288670</td><td>494603</td><td>5820529</td><td>8243711</td><td>7005986</td><td>34129127</td><td>10240732</td>
+<tr><th>double</th><th>taylormath</th><td>118835</td><td>121304</td><td>289303</td><td>495234</td><td>5823425</td><td>8232447</td><td>7001769</td><td>34081771</td><td>10238240</td>
 
 </tr>
 </tbody></table>
@@ -141,3 +134,13 @@ Differences with double and cmath as reference.<br>
 ![log plot](plots/plot_log.png)
 ![exp plot](plots/plot_exp.png)
 ![sqrt plot](plots/plot_sqrt.png)
+
+### Taylormath iterations 
+
+![asin plot](plots/plot_asin_iterations.png)
+![cos plot](plots/plot_cos_iterations.png)
+![sin plot](plots/plot_sin_iterations.png)
+![log plot](plots/plot_log_iterations.png)
+![exp plot](plots/plot_exp_iterations.png)
+![sqrt plot](plots/plot_sqrt_iterations.png)
+

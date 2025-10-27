@@ -77,7 +77,7 @@ void test() {
 
 int main() {
 
-    test<fixed32>();
+    test<fixed32_a>();
     test<fixed64>();
 
     return status_code;
