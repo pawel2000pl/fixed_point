@@ -385,9 +385,25 @@ class fixedpoint {
             return fixedpoint(fixedpoint_helpers::buf_from_ieee754<BUF_TYPE, frac_bits>(x), true);
         }
 
+        static fixedpoint from_ieee754(float x) {
+            return from_float(x);
+        }
+
+        static fixedpoint from_ieee754(double x) {
+            return from_double(x);
+        }
+
         FIXED_POINT_FLOAT_TEMPLATE
-        static fixedpoint from_float_stable(FP x) {
+        static fixedpoint from_ieee754_stable(FP x) {
             return fixedpoint(x * (1 << frac_bits), true);
+        }
+
+        static fixedpoint from_float_stable(float x) {
+            return from_ieee754_stable<float>(x);
+        }
+
+        static fixedpoint from_double_stable(double x) {
+            return from_ieee754_stable<double>(x);
         }
 
 
