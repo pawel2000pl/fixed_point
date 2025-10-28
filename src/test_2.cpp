@@ -16,7 +16,10 @@ template<typename T>
 void test_function(const std::string& filename, double start, double stop, unsigned n, const std::function<T(T)> fun) {
     std::ofstream file(filename);
     file << std::fixed << std::setw(32) << std::setprecision(32);
-    fun(0.1); // initialize of needed
+    // initialize of needed
+    fun(start); 
+    fun((stop+start)/2);
+    fun(stop);
     for (unsigned i=0;i<n;i++) {
         taylor::loop_counter = 0;
         double x = start + i * (stop - start) / n;

@@ -311,6 +311,7 @@ namespace taylor {
     T pown(T x, unsigned n) {
         T ans = 1;
         while (n > 0) {
+            TAYLOR_INCREMENT_LOOP_COUNTER;
             int last_bit = (n & 1);
             if (last_bit) {
                 ans = ans * x;
@@ -325,7 +326,7 @@ namespace taylor {
     template<typename T>
     T exp(T x) {
         if (x == 0) return 1;
-        if (x < 0) return 1 / exp(-x);
+        if (x < 0) return 1 / exp<T>(-x);
         if (x <= 1) return exp_small_pos<T>(x);
         unsigned long long int n = std::floor(x);
         T rest = x - n;

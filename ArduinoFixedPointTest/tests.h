@@ -91,6 +91,13 @@ void all_tests_taylor(unsigned n) {
   unsigned long long int prod = measure_time([=](){return (float)prod_test<T>(n);});
   unsigned long long int quot = measure_time([=](){return (float)quot_test<T>(n);});
 
+  // initialization (if needed)
+  taylor::sin<T>(5);
+  taylor::sqrt<T>(5);
+  taylor::asin<T>(0.5f);
+  taylor::log<T>(0.5f);
+  taylor::exp<T>(10);
+
   unsigned long long int tsin = measure_time([=](){return (float)math_test<T>(-5, 5, T(10)/n, &taylor::sin<T>);});
   unsigned long long int tsqrt = measure_time([=](){return (float)math_test<T>(0, 5, T(10)/n, &taylor::sqrt<T>);});
   unsigned long long int tasin = measure_time([=](){return (float)math_test<T>(-0.999, 0.999, T(10)/n, &taylor::asin<T>);});
@@ -111,6 +118,13 @@ void all_tests_std(unsigned n) {
   unsigned long long int sub = measure_time([=](){return (float)sub_test<T>(n);});
   unsigned long long int prod = measure_time([=](){return (float)prod_test<T>(n);});
   unsigned long long int quot = measure_time([=](){return (float)quot_test<T>(n);});
+
+  // initialization (if needed)
+  sin((T)5);
+  sqrt((T)5);
+  asin((T)0.5f);
+  log((T)0.5f);
+  exp((T)10);
 
   unsigned long long int tsin = measure_time([=](){return (float)math_test<T>(-5, 5, T(10)/n, [](T x){return sin(x);});});
   unsigned long long int tsqrt = measure_time([=](){return (float)math_test<T>(0, 5, T(10)/n, [](T x){return sqrt(x);});});
