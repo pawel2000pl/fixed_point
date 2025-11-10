@@ -77,7 +77,9 @@ namespace fixedpoint_helpers {
     #undef __MAKE_INT_TRAITS
     #undef __MAKE_INT_MAPPING
 
+    #ifndef FORCE_INLINE
     #define FORCE_INLINE __attribute__((always_inline)) inline
+    #endif
 
     template<typename U>
     struct is_fixedpoint : std::false_type {};
