@@ -11,12 +11,13 @@
 
 #include "lib/fixedpoint.h"
 #include "lib/taylormath.h"
+#include "lib/polyapprox.h"
 
 template<typename T>
 void test_function(const std::string& filename, double start, double stop, unsigned n, const std::function<T(T)> fun) {
     std::ofstream file(filename);
     file << std::fixed << std::setw(32) << std::setprecision(32);
-    // initialize of needed
+    // initialize if needed
     fun(start); 
     fun((stop+start)/2);
     fun(stop);
@@ -81,6 +82,46 @@ int main() {
     test_function<fixed64>("plots/fixed64_taylor_asin.txt", -1, 1, n, taylor::asin<fixed64>);
     test_function<fixed64>("plots/fixed64_taylor_log.txt", 1e-3, 10, n, taylor::log<fixed64>);
     test_function<fixed64>("plots/fixed64_taylor_exp.txt", -10, 10, n, taylor::exp<fixed64>);
+
+    unsigned m = 31;
+
+    test_function<float>("plots/float_approx_cos.txt", -10, 10, n, PolyApprox<float>::create<double>(cos, m, -10, 10, 1e-3));
+    test_function<float>("plots/float_approx_sin.txt", -10, 10, n, PolyApprox<float>::create<double>(sin, m, -10, 10, 1e-3));
+    test_function<float>("plots/float_approx_sqrt.txt", 0, 16, n, PolyApprox<float>::create<double>(sqrt, m, 0, 16, 1e-3));
+    test_function<float>("plots/float_approx_asin.txt", -1, 1, n, PolyApprox<float>::create<double>(asin, m, -1, 1, 1e-3));
+    test_function<float>("plots/float_approx_log.txt", 1e-3, 10, n, PolyApprox<float>::create<double>(log, m, 1e-3, 10, 1e-3));
+    test_function<float>("plots/float_approx_exp.txt", -10, 10, n, PolyApprox<float>::create<double>(exp, m, -10, 10, 1e-3));
+
+    test_function<double>("plots/double_approx_cos.txt", -10, 10, n, PolyApprox<double>::create<double>(cos, m, -10, 10, 1e-3));
+    test_function<double>("plots/double_approx_sin.txt", -10, 10, n, PolyApprox<double>::create<double>(sin, m, -10, 10, 1e-3));
+    test_function<double>("plots/double_approx_sqrt.txt", 0, 16, n, PolyApprox<double>::create<double>(sqrt, m, 0, 16, 1e-3));
+    test_function<double>("plots/double_approx_asin.txt", -1, 1, n, PolyApprox<double>::create<double>(asin, m, -1, 1, 1e-3));
+    test_function<double>("plots/double_approx_log.txt", 1e-3, 10, n, PolyApprox<double>::create<double>(log, m, 1e-3, 10, 1e-3));
+    test_function<double>("plots/double_approx_exp.txt", -10, 10, n, PolyApprox<double>::create<double>(exp, m, -10, 10, 1e-3));
+
+    test_function<fixed32_s>("plots/fixed32_s_approx_cos.txt", -10, 10, n, PolyApprox<fixed32_s>::create<double>(cos, m, -10, 10, 1e-3));
+    test_function<fixed32_s>("plots/fixed32_s_approx_sin.txt", -10, 10, n, PolyApprox<fixed32_s>::create<double>(sin, m, -10, 10, 1e-3));
+    test_function<fixed32_s>("plots/fixed32_s_approx_sqrt.txt", 0, 16, n, PolyApprox<fixed32_s>::create<double>(sqrt, m, 0, 16, 1e-3));
+    test_function<fixed32_s>("plots/fixed32_s_approx_asin.txt", -1, 1, n, PolyApprox<fixed32_s>::create<double>(asin, m, -1, 1, 1e-3));
+    test_function<fixed32_s>("plots/fixed32_s_approx_log.txt", 1e-3, 10, n, PolyApprox<fixed32_s>::create<double>(log, m, 1e-3, 10, 1e-3));
+    test_function<fixed32_s>("plots/fixed32_s_approx_exp.txt", -10, 10, n, PolyApprox<fixed32_s>::create<double>(exp, m, -10, 10, 1e-3));
+
+    test_function<fixed32_a>("plots/fixed32_a_approx_cos.txt", -10, 10, n, PolyApprox<fixed32_a>::create<double>(cos, m, -10, 10, 1e-3));
+    test_function<fixed32_a>("plots/fixed32_a_approx_sin.txt", -10, 10, n, PolyApprox<fixed32_a>::create<double>(sin, m, -10, 10, 1e-3));
+    test_function<fixed32_a>("plots/fixed32_a_approx_sqrt.txt", 0, 16, n, PolyApprox<fixed32_a>::create<double>(sqrt, m, 0, 16, 1e-3));
+    test_function<fixed32_a>("plots/fixed32_a_approx_asin.txt", -1, 1, n, PolyApprox<fixed32_a>::create<double>(asin, m, -1, 1, 1e-3));
+    test_function<fixed32_a>("plots/fixed32_a_approx_log.txt", 1e-3, 10, n, PolyApprox<fixed32_a>::create<double>(log, m, 1e-3, 10, 1e-3));
+    test_function<fixed32_a>("plots/fixed32_a_approx_exp.txt", -10, 10, n, PolyApprox<fixed32_a>::create<double>(exp, m, -10, 10, 1e-3));
+
+    test_function<fixed64>("plots/fixed64_approx_cos.txt", -10, 10, n, PolyApprox<fixed64>::create<double>(cos, m, -10, 10, 1e-3));
+    test_function<fixed64>("plots/fixed64_approx_sin.txt", -10, 10, n, PolyApprox<fixed64>::create<double>(sin, m, -10, 10, 1e-3));
+    test_function<fixed64>("plots/fixed64_approx_sqrt.txt", 0, 16, n, PolyApprox<fixed64>::create<double>(sqrt, m, 0, 16, 1e-3));
+    test_function<fixed64>("plots/fixed64_approx_asin.txt", -1, 1, n, PolyApprox<fixed64>::create<double>(asin, m, -1, 1, 1e-3));
+    test_function<fixed64>("plots/fixed64_approx_log.txt", 1e-3, 10, n, PolyApprox<fixed64>::create<double>(log, m, 1e-3, 10, 1e-3));
+    test_function<fixed64>("plots/fixed64_approx_exp.txt", -10, 10, n, PolyApprox<fixed64>::create<double>(exp, m, -10, 10, 1e-3));
+
+
+
 
     return 0;
 }

@@ -1,6 +1,10 @@
-# Library for fixed point operations with math module based on (mostly) taylor series.
+# Library for fixed point operations with alterate specialized math modules.
 
-Template dedicated for RISC-V 32 IM.
+Template dedicated for RISC-V 32 IM.<br>
+
+There are two math modules:
+* taylormath which is based mostly on taylor series
+* polyapprox which is based on cubic Hermite interpolator
 
 ## Usage
 
@@ -16,9 +20,9 @@ The library works with C++:
 * std-c++17
 * std-c++11 if you are not going to use constexpr functionalities (they works but not everywhere)
 
-### Usage in code
+### Fixedpoint
 
-The template has the following prototype:
+The fixedpoint template has the following prototype:
 ~~~
 template<typename T, typename TC=typename make_fast_int<T>::type, unsigned frac_bits=sizeof(T)*4-1> class fixedpoint;
 ~~~
@@ -87,11 +91,39 @@ There are predefinied types:
 
         * ufixed_t - unsigned `std::size_t` for `T`, fast unsigned `std::size_t` for `TC`, `sizeof(std::size_t) * 4 - 1` fraction bits;
 
-### Conversions from IEEE754
+#### Conversions from IEEE754
 
  Results of conversion from IEEE754 might be incorrect due to reading the numbers binary. 
  Always check results on the new target.
  In case of any errors use FIXED_POINT_IEEE754_ALWAYS_MULTIPLICATE macro.
+
+### Taylormath
+
+Each template takes a type which is used for calculations. 
+It can be deduced by a compiler, but to avoid mistakes and calculating on too accuracy (and slower) type 
+it is advised to fill the template parameter, f.e:
+~~~~
+std::cout << taylor::exp<fixed32_f>(x) << "\n";
+std::cout << taylor::asin<fixed32_f>(x) << "\n";
+std::cout << taylor::cos<fixed32_f>(x) << "\n";
+std::cout << taylor::sqrt<fixed32_f>(x) << "\n";
+~~~~
+
+Taylormath calculates until increasing accuracy is not possible, so the more accurate type, the more time is needed to calculate a function result.
+
+### Polyapprox
+
+This is a class which allows to create an approximation (functional). 
+There are required one template parameter (`Storable`) which will be used for parameters storage and calculating the value of the approximation.<br>
+The constructor / `fit` method / `create` static function takes the following parameters:
+* `src` - functional of a source function
+* `part_count` - number of divisions of the source function on a given range
+* `range_min` - minimal value of the range
+* `range_max` - maximal value of the range
+* `dx` - step for deriverates (default 1e-3)
+
+The constructor / `fit` method / `create` static function are templates. 
+The only parameter is a type which will be used for calculating parameters for the approximation.
 
 ## Test results
 
@@ -121,26 +153,27 @@ There are predefinied types:
 </tr>
 </tbody></table>
 
-<br>
-Taylormath calculates until increasing accuracy is not possible, so the more accurate type, the more time is needed to calculate a function result.
 
-### Taylormath accuracy 
+### Taylormath and Polyapprox accuracy 
 
 Differences with double and cmath as reference.<br>
+Polyapprox uses 31-points in test cases.<br>
 
-![asin plot](plots/plot_asin.png)
-![cos plot](plots/plot_cos.png)
-![sin plot](plots/plot_sin.png)
-![log plot](plots/plot_log.png)
-![exp plot](plots/plot_exp.png)
-![sqrt plot](plots/plot_sqrt.png)
+Taylormath                 |  Polyapprox
+:-------------------------:|:-------------------------:
+![asin taylor plot](plots/plot_taylor_asin.png) | ![asin polyapprox plot](plots/plot_approx_asin.png)
+![cos taylor plot](plots/plot_taylor_cos.png) | ![cos polyapprox plot](plots/plot_approx_cos.png)
+![sin taylor plot](plots/plot_taylor_sin.png) | ![sin polyapprox plot](plots/plot_approx_sin.png)
+![log taylor plot](plots/plot_taylor_log.png) | ![log polyapprox plot](plots/plot_approx_log.png)
+![exp taylor plot](plots/plot_taylor_exp.png) | ![exp polyapprox plot](plots/plot_approx_exp.png)
+![sqrt taylor plot](plots/plot_taylor_sqrt.png) | ![sqrt polyapprox plot](plots/plot_approx_sqrt.png)
 
 ### Taylormath iterations 
 
-![asin plot](plots/plot_asin_iterations.png)
-![cos plot](plots/plot_cos_iterations.png)
-![sin plot](plots/plot_sin_iterations.png)
-![log plot](plots/plot_log_iterations.png)
-![exp plot](plots/plot_exp_iterations.png)
-![sqrt plot](plots/plot_sqrt_iterations.png)
+![asin taylor iterations plot](plots/plot_taylor_asin_iterations.png)
+![cos taylor iterations plot](plots/plot_taylor_cos_iterations.png)
+![sin taylor iterations plot](plots/plot_taylor_sin_iterations.png)
+![log taylor iterations plot](plots/plot_taylor_log_iterations.png)
+![exp taylor iterations plot](plots/plot_taylor_exp_iterations.png)
+![sqrt taylor iterations plot](plots/plot_taylor_sqrt_iterations.png)
 
