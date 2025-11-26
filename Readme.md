@@ -1,4 +1,4 @@
-# Library for fixed point operations with alterate specialized math modules.
+# Library for fixed point operations with alternative specialized math modules.
 
 Template dedicated for RISC-V 32 IM.<br>
 
@@ -122,7 +122,7 @@ The constructor / `fit` method / `create` static function takes the following pa
 * `range_max` - maximal value of the range
 * `dx` - step for deriverates (default 1e-3)
 
-The constructor / `fit` method / `create` static function are templates. 
+The constructor, `fit` method and `create` static function are templates. 
 The only parameter is a type which will be used for calculating parameters for the approximation.
 
 ## Test results
