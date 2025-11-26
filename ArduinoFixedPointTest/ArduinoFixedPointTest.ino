@@ -25,6 +25,18 @@ void loop() {
   all_tests_taylor<fixed64>(100000);
   Serial.println("</tr>");
 
+  Serial.print("<tr><th>fixed32_s</th><th>polyapprox</th>");
+  all_tests_polyapprox<fixed32_s>(100000);
+  Serial.println("</tr>");
+
+  Serial.print("<tr><th>fixed32_a</th><th>polyapprox</th>");
+  all_tests_polyapprox<fixed32_a>(100000);
+  Serial.println("</tr>");
+
+  Serial.print("<tr><th>fixed64</th><th>polyapprox</th>");
+  all_tests_polyapprox<fixed64>(100000);
+  Serial.println("</tr>");
+
   Serial.print("<tr><th>float</th><th>cmath</th>");
   all_tests_std<float>(100000);
   Serial.println("</tr>");

@@ -6,6 +6,7 @@
 
 #include "lib/fixedpoint.h"
 #include "lib/taylormath.h"
+#include "lib/polyapprox.h"
 
 
 volatile float result_dump = 0;
@@ -103,6 +104,36 @@ void all_tests_taylor(unsigned n) {
   unsigned long long int tasin = measure_time([=](){return (float)math_test<T>(-0.999, 0.999, T(10)/n, &taylor::asin<T>);});
   unsigned long long int tlog = measure_time([=](){return (float)math_test<T>(0.001, 7, T(10)/n, &taylor::log<T>);});
   unsigned long long int texp = measure_time([=](){return (float)math_test<T>(-5, 5, T(10)/n, &taylor::exp<T>);});
+
+  Serial.printf( 
+    "<td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td>\n\r",
+    add, sub, prod, quot, tsin, tsqrt, tasin, tlog, texp
+  );
+}
+
+
+template<typename T>
+void all_tests_polyapprox(unsigned n) {
+
+  unsigned long long int add = measure_time([=](){return (float)add_test<T>(n);});
+  unsigned long long int sub = measure_time([=](){return (float)sub_test<T>(n);});
+  unsigned long long int prod = measure_time([=](){return (float)prod_test<T>(n);});
+  unsigned long long int quot = measure_time([=](){return (float)quot_test<T>(n);});
+
+  // initialization (if needed)
+  unsigned m = 31;
+
+  PolyApprox<T> ap_sin = PolyApprox<T>::template create<double>([](double x) {return sin(x);}, m, -5, 5);
+  PolyApprox<T> ap_sqrt = PolyApprox<T>::template create<double>([](double x) {return sqrt(x);}, m, 0, 5);
+  PolyApprox<T> ap_asin = PolyApprox<T>::template create<double>([](double x) {return asin(x);}, m, -1, 1);
+  PolyApprox<T> ap_log = PolyApprox<T>::template create<double>([](double x) {return log(x);}, m, 0.001f, 7);
+  PolyApprox<T> ap_exp = PolyApprox<T>::template create<double>([](double x) {return exp(x);}, m, -5, 5);
+
+  unsigned long long int tsin = measure_time([=](){return (float)math_test<T>(-5, 5, T(10)/n, ap_sin);});
+  unsigned long long int tsqrt = measure_time([=](){return (float)math_test<T>(0, 5, T(10)/n, ap_sqrt);});
+  unsigned long long int tasin = measure_time([=](){return (float)math_test<T>(-0.999, 0.999, T(10)/n, ap_asin);});
+  unsigned long long int tlog = measure_time([=](){return (float)math_test<T>(0.001, 7, T(10)/n, ap_log);});
+  unsigned long long int texp = measure_time([=](){return (float)math_test<T>(-5, 5, T(10)/n, ap_exp);});
 
   Serial.printf( 
     "<td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td>\n\r",
