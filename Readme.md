@@ -128,36 +128,37 @@ The only parameter is a type which will be used for calculating parameters for t
 ## Test results
 
 ### Speed comparision (microseconds per 100000 operations on ESP32C3@160MHz)
+Read `ArduinoFixedPointTest/tests.h` to see details.
 
 <table><thead><tr><th>type</th><th>library</th><th>addition</th><th>subtraction</th><th>multiplication</th><th>division</th><th>sin</th><th>sqrt</th><th>asin</th><th>log</th><th>exp</th></tr></thead><tbody>
-<tr><th>fixed32_s</th><th>taylormath</th><td>6986</td><td>6917</td><td>6918</td><td>38999</td><td>188329</td><td>78813</td><td>113823</td><td>343836</td><td>300288</td>
+<tr><th>fixed32_s</th><th>taylormath</th><td>6981</td><td>6917</td><td>10698</td><td>26436</td><td>169572</td><td>143301</td><td>522276</td><td>453157</td><td>267850</td>
 
 </tr>
-<tr><th>fixed32_a</th><th>taylormath</th><td>6958</td><td>6923</td><td>15730</td><td>201259</td><td>306051</td><td>255731</td><td>171318</td><td>865932</td><td>387778</td>
+<tr><th>fixed32_a</th><th>taylormath</th><td>6956</td><td>6923</td><td>13846</td><td>105995</td><td>284164</td><td>470334</td><td>788120</td><td>1136635</td><td>357140</td>
 
 </tr>
-<tr><th>fixed64</th><th>taylormath</th><td>13252</td><td>13214</td><td>20762</td><td>206317</td><td>836684</td><td>384352</td><td>393059</td><td>1995360</td><td>1436721</td>
+<tr><th>fixed64</th><th>taylormath</th><td>13240</td><td>13212</td><td>20769</td><td>114558</td><td>841901</td><td>772750</td><td>1977503</td><td>2864429</td><td>1441286</td>
 
 </tr>
-<tr><th>fixed32_s</th><th>polyapprox</th><td>6962</td><td>6921</td><td>6921</td><td>38997</td><td>54698</td><td>27475</td><td>11103</td><td>38496</td><td>55431</td>
+<tr><th>fixed32_s</th><th>polyapprox</th><td>6963</td><td>6924</td><td>10696</td><td>26434</td><td>53140</td><td>52686</td><td>54072</td><td>52684</td><td>52913</td>
 
 </tr>
-<tr><th>fixed32_a</th><th>polyapprox</th><td>6958</td><td>6924</td><td>15731</td><td>201260</td><td>73302</td><td>36844</td><td>14807</td><td>51562</td><td>75432</td>
+<tr><th>fixed32_a</th><th>polyapprox</th><td>6957</td><td>6923</td><td>13845</td><td>105997</td><td>71078</td><td>69839</td><td>71054</td><td>69783</td><td>71193</td>
 
 </tr>
-<tr><th>fixed64</th><th>polyapprox</th><td>13247</td><td>13213</td><td>20763</td><td>206316</td><td>102521</td><td>51343</td><td>20581</td><td>71814</td><td>104025</td>
+<tr><th>fixed64</th><th>polyapprox</th><td>13250</td><td>13212</td><td>20766</td><td>114554</td><td>108361</td><td>108048</td><td>109319</td><td>107843</td><td>109227</td>
 
 </tr>
-<tr><th>float</th><th>cmath</th><td>101480</td><td>105842</td><td>163519</td><td>255340</td><td>2026177</td><td>336249</td><td>533456</td><td>1527470</td><td>2015465</td>
+<tr><th>float</th><th>cmath</th><td>101470</td><td>105847</td><td>87411</td><td>134307</td><td>2048567</td><td>682605</td><td>2684685</td><td>2190272</td><td>2035009</td>
 
 </tr>
-<tr><th>double</th><th>cmath</th><td>118827</td><td>121316</td><td>288677</td><td>494633</td><td>3030803</td><td>617293</td><td>842723</td><td>2345145</td><td>3003430</td>
+<tr><th>double</th><th>cmath</th><td>118840</td><td>121316</td><td>150957</td><td>256267</td><td>3058473</td><td>1248267</td><td>4236754</td><td>3361766</td><td>3026707</td>
 
 </tr>
-<tr><th>float</th><th>taylormath</th><td>101473</td><td>105848</td><td>163526</td><td>255342</td><td>2690392</td><td>1834768</td><td>1433114</td><td>8419271</td><td>4191791</td>
+<tr><th>float</th><th>taylormath</th><td>101484</td><td>105847</td><td>87406</td><td>134307</td><td>2712767</td><td>3679105</td><td>7189580</td><td>12053340</td><td>4208784</td>
 
 </tr>
-<tr><th>double</th><th>taylormath</th><td>118840</td><td>121310</td><td>288683</td><td>494627</td><td>5831502</td><td>8236738</td><td>7005055</td><td>34108095</td><td>10246967</td>
+<tr><th>double</th><th>taylormath</th><td>118830</td><td>121316</td><td>150958</td><td>256267</td><td>5858965</td><td>16485806</td><td>35059986</td><td>48714662</td><td>10290869</td>
 
 </tr>
 </tbody></table>
