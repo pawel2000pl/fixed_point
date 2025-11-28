@@ -114,10 +114,13 @@ Taylormath calculates until increasing accuracy is not possible, so the more acc
 ### Polyapprox
 
 This is a class which allows to create an approximation (functional). 
-There are required one template parameter (`Storable`) which will be used for parameters storage and calculating the value of the approximation.<br>
+There is required at least one template parameter (`Storable`) which is used for storage parameters and calculating the value of the approximation.<br>
+The second (optional) template parameter `static_part_count` is a number of parts of the approximation. 
+For `0` the class uses `std::vector` and number of parts can be set dynamically.
+For values greater than `0` the class uses `std::array` and the number of parts cannot be changed.
 The constructor / `fit` method / `create` static function takes the following parameters:
 * `src` - functional of a source function
-* `part_count` - number of divisions of the source function on a given range
+* `part_count` - number of divisions of the source function on a given range - parameter exists only if `static_part_count > 0` 
 * `range_min` - minimal value of the range
 * `range_max` - maximal value of the range
 * `dx` - step for deriverates (default 1e-3)
