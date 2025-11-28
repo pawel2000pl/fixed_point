@@ -513,7 +513,7 @@ class fixedpoint {
                 }
             if (tmpBuf < 0) {
                 *(wbuf++) = '-';
-                tmpBuf = -tmpBuf;                
+                tmpBuf = -tmpBuf;
             }
             T intPart = tmpBuf >> frac_bits;
             T fracPart = tmpBuf - (intPart << frac_bits);

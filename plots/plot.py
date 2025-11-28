@@ -21,7 +21,7 @@ def load_data(filename, diffy=None):
 
 def draw_plots(function, group, make_diff, log_scale, data_slice, plt_suffix='', show_std=True):
     ref_x, ref_y, counts = load_data(f'double_std_{function}.txt') if make_diff else (None, None, None)
-    plt.figure(figsize=(6,4))    
+    plt.figure(figsize=(6,4))
     plt.plot(*load_data(f'float_{group}_{function}.txt', ref_y)[data_slice], label='float', linestyle='--', alpha=0.7)
     plt.plot(*load_data(f'double_{group}_{function}.txt', ref_y)[data_slice], label='double', linestyle='-.', alpha=0.7)
     plt.plot(*load_data(f'fixed32_s_{group}_{function}.txt', ref_y)[data_slice], label='fixed32_s', linestyle=':', alpha=0.7, marker='*', markersize=5)

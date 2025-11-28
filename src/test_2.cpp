@@ -18,7 +18,7 @@ void test_function(const std::string& filename, double start, double stop, unsig
     std::ofstream file(filename);
     file << std::fixed << std::setw(32) << std::setprecision(32);
     // initialize if needed
-    fun(start); 
+    fun(start);
     fun((stop+start)/2);
     fun(stop);
     for (unsigned i=0;i<n;i++) {

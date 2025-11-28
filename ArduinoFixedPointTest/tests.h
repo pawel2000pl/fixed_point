@@ -11,7 +11,7 @@
 
 volatile float result_dump = 0;
 
-template<typename T> 
+template<typename T>
 T add_test(unsigned n) {
   T result = 0;
   for (unsigned i=0;i<n;i++) {
@@ -21,7 +21,7 @@ T add_test(unsigned n) {
   return result;
 }
 
-template<typename T> 
+template<typename T>
 T sub_test(unsigned n) {
   T result = 0;
   for (unsigned i=0;i<n;i++) {
@@ -31,7 +31,7 @@ T sub_test(unsigned n) {
   return result;
 }
 
-template<typename T> 
+template<typename T>
 T prod_test(unsigned n) {
   T result = 0.001f;
   T mul1 = 1.01f;
@@ -46,7 +46,7 @@ T prod_test(unsigned n) {
 }
 
 
-template<typename T> 
+template<typename T>
 T quot_test(unsigned n) {
   T result = 1000;
   T div1 = 1.01f;
@@ -61,7 +61,7 @@ T quot_test(unsigned n) {
 }
 
 
-template<typename T> 
+template<typename T>
 T math_test(T start, T stop, unsigned n, const std::function<T(T)>& fun) {
   T span = stop - start;
   T step = T(span) * T(0.09407208683835973f);
@@ -112,7 +112,7 @@ void all_tests_taylor(unsigned n) {
   unsigned long long int tlog = measure_time([=](){return (float)math_test<T>(0.001, 7, n, &taylor::log<T>);});
   unsigned long long int texp = measure_time([=](){return (float)math_test<T>(-5, 5, n, &taylor::exp<T>);});
 
-  Serial.printf( 
+  Serial.printf(
     "<td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td>\n\r",
     add, sub, prod, quot, tsin, tsqrt, tasin, tlog, texp
   );
@@ -142,7 +142,7 @@ void all_tests_polyapprox(unsigned n) {
   unsigned long long int tlog = measure_time([=](){return (float)math_test<T>(0.001, 7, n, ap_log);});
   unsigned long long int texp = measure_time([=](){return (float)math_test<T>(-5, 5, n, ap_exp);});
 
-  Serial.printf( 
+  Serial.printf(
     "<td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td>\n\r",
     add, sub, prod, quot, tsin, tsqrt, tasin, tlog, texp
   );
@@ -170,7 +170,7 @@ void all_tests_std(unsigned n) {
   unsigned long long int tlog = measure_time([=](){return (float)math_test<T>(0.001, 7, n, [](T x){return log(x);});});
   unsigned long long int texp = measure_time([=](){return (float)math_test<T>(-5, 5, n, [](T x){return exp(x);});});
 
-  Serial.printf( 
+  Serial.printf(
     "<td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td><td>%llu</td>\n\r",
     add, sub, prod, quot, tsin, tsqrt, tasin, tlog, texp
   );

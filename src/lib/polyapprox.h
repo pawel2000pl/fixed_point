@@ -47,7 +47,7 @@ class PolyApprox {
         PolyApprox(const PolyApprox&) = default;
         PolyApprox(PolyApprox&&) = default;
 
-    
+
         template <typename Calculable>
         PolyApprox(const std::function<Calculable(Calculable)>& src, unsigned part_count, Calculable range_min, Calculable range_max, Calculable dx=1e-3) {
             fit<Calculable>(src, part_count, range_min, range_max, dx);
