@@ -56,6 +56,7 @@ class PolyApprox {
             __fit<Calculable>(src, part_count, range_min, range_max, dx);
         }
 
+
         template <typename Calculable, bool enable_part_count = !is_static, typename std::enable_if<!enable_part_count, void>::type* = nullptr>
         PolyApprox(const std::function<Calculable(Calculable)>& src, Calculable range_min, Calculable range_max, Calculable dx=1e-3) {
             __fit<Calculable>(src, static_part_count, range_min, range_max, dx);
@@ -66,6 +67,7 @@ class PolyApprox {
         static PolyApprox create(const std::function<Calculable(Calculable)>& src, unsigned part_count, Calculable range_min, Calculable range_max, Calculable dx=1e-3) {
             return PolyApprox(src, part_count, range_min, range_max, dx);
         }
+
 
         template <typename Calculable, bool enable_part_count = !is_static, typename std::enable_if<!enable_part_count, void>::type* = nullptr>
         static PolyApprox create(const std::function<Calculable(Calculable)>& src, Calculable range_min, Calculable range_max, Calculable dx=1e-3) {
@@ -173,27 +175,27 @@ class PolyApprox {
         template <typename Calculable>
         void __fit(const std::function<Calculable(Calculable)>& src, unsigned part_count, Calculable range_min, Calculable range_max, Calculable dx=1e-3) {
             
-            constexpr const Calculable mid_der_k = Calculable(3) / Calculable(2);
+            constexpr const Calculable mid_der_k = Calculable(3) / 2;
             Calculable inc = (range_max - range_min) / part_count;
             Calculable half_inc = inc / 2;
             Calculable inv_inc = Calculable(1) / inc;
             Calculable inv_inc2 = inv_inc * inv_inc;
             Calculable inv_inc3 = inv_inc2 * inv_inc;
-            Calculable idx = Calculable(1) / dx;
-            Calculable half_idx = idx / 2;
+            Calculable inc_idx = inc / dx;
+            Calculable half_inc_idx = inc_idx / 2;
             this->range_min = range_min;
             this->inv_incrementator = inv_inc;
             this->resize_coefficients<coefficients_type>(part_count);
 
             Calculable prev_value = src(range_min);
-            Calculable prev_deriverate = (src(range_min+dx) - prev_value) * inc * idx;
+            Calculable prev_deriverate = (src(range_min+dx) - prev_value) * inc_idx;
             Calculable prev_x = range_min;
 
             for (unsigned i=1;i<=part_count;i++) {
                 Calculable x = range_min + i * inc;
                 Calculable value = src(x);
                 Calculable v_mid = src(x - half_inc);
-                Calculable new_deriverate = ((i<part_count) ? ((src(x+dx) - src(x-dx)) * half_idx) : ((value - src(x-dx)) * idx)) * inc;
+                Calculable new_deriverate = ((i<part_count) ? ((src(x+dx) - src(x-dx)) * half_inc_idx) : ((value - src(x-dx)) * inc_idx));
                 Calculable deriverate = new_deriverate;
                 Calculable vx = value - prev_value;
                 Calculable max_prev_deriverate = 3 * absmax<Calculable>(mid_der_k * (v_mid - prev_value), vx);
