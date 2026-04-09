@@ -164,6 +164,12 @@ Read `ArduinoFixedPointTest/tests.h` to see details.
 <tr><th>double</th><th>taylormath</th><td>118830</td><td>121316</td><td>150958</td><td>256267</td><td>5858965</td><td>16485806</td><td>35059986</td><td>48714662</td><td>10290869</td>
 
 </tr>
+<tr><th>float</th><th>polyapprox</th><td>101478</td><td>105845</td><td>87402</td><td>134302</td><td>1018165</td><td>974025</td><td>1013923</td><td>996567</td><td>1011484</td>
+
+</tr>
+<tr><th>double</th><th>polyapprox</th><td>118836</td><td>121307</td><td>150954</td><td>256262</td><td>1440301</td><td>1387569</td><td>1440060</td><td>1414756</td><td>1430488</td>
+
+</tr>
 </tbody></table>
 
 

@@ -55,6 +55,14 @@ void loop() {
   all_tests_taylor<double>(n);
   Serial.println("</tr>");
 
+  Serial.print("<tr><th>float</th><th>polyapprox</th>");
+  all_tests_polyapprox<float>(n);
+  Serial.println("</tr>");
+
+  Serial.print("<tr><th>double</th><th>polyapprox</th>");
+  all_tests_polyapprox<double>(n);
+  Serial.println("</tr>");
+
   Serial.println("</tbody></table>");
 
   Serial.println("\nDONE\n\n");
