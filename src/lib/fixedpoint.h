@@ -466,7 +466,7 @@ class fixedpoint {
         }
 
         FIXED_POINT_BOOL_TEMPLATE FORCE_INLINE
-        constexpr operator B() noexcept {
+        constexpr operator B() const noexcept {
             return (B)buf;
         }
 
